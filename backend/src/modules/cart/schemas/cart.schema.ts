@@ -29,7 +29,7 @@ export class Cart extends Document {
 
   // Present for guest carts — a random opaque token kept in a cookie/header
   // on the storefront. Exactly one of customerId/guestToken is set.
-  @Prop({ default: null, index: true })
+  @Prop({ type: String, default: null, index: true })
   guestToken!: string | null;
 
   @Prop({ type: [CartItemSchema], default: [] })

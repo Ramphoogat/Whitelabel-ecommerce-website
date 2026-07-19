@@ -25,10 +25,10 @@ export class Banner extends Document {
   @Prop({ default: 0 })
   displayOrder!: number;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   startsAt!: Date | null;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   endsAt!: Date | null;
 }
 

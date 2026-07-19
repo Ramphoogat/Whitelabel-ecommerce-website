@@ -15,7 +15,7 @@ export class ProductVariant extends Document {
   @Prop({ required: true })
   priceCents!: number;
 
-  @Prop({ default: null })
+  @Prop({ type: Number, default: null })
   compareAtPriceCents!: number | null;
 
   // e.g. { size: "M", color: "Red" } — drives the variant picker UI

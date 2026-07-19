@@ -22,16 +22,16 @@ export class Coupon extends Document {
 
   // Caps the discount for percentage coupons (e.g. "20% off, up to ₹500").
   // Ignored for fixed coupons.
-  @Prop({ default: null })
+  @Prop({ type: Number, default: null })
   maxDiscountCents!: number | null;
 
-  @Prop({ default: null })
+  @Prop({ type: Number, default: null })
   usageLimit!: number | null; // null = unlimited
 
   @Prop({ default: 0 })
   usedCount!: number;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   expiresAt!: Date | null;
 
   @Prop({ default: true })

@@ -14,10 +14,10 @@ export class WebhookEvent extends Document {
   @Prop({ type: Object, required: true })
   payload!: Record<string, unknown>;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   processedAt!: Date | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   processingError!: string | null;
 }
 

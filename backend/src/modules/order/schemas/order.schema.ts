@@ -49,7 +49,7 @@ export class Order extends Document {
   @Prop({ required: true })
   totalCents!: number;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   couponCode!: string | null;
 
   @Prop({ default: 0 })
@@ -61,16 +61,16 @@ export class Order extends Document {
   @Prop({ type: Types.ObjectId, ref: 'CheckoutSession', required: true })
   checkoutSessionId!: Types.ObjectId;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   paymentGateway!: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   gatewayPaymentId!: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   contactEmail!: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   contactPhone!: string | null;
 }
 

@@ -11,6 +11,7 @@ import { QueueModule } from './providers/queue/queue.module';
 import { HealthModule } from './modules/health/health.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { IdentityModule } from './modules/identity/identity.module';
+import { CustomerModule } from './modules/customer/customer.module';
 import { AuthSharedModule } from './shared/guards/auth-shared.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
@@ -56,6 +57,7 @@ import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
     PaymentModule,
     AuthSharedModule,
     IdentityModule,
+    CustomerModule,
     InventoryModule,
     CatalogModule,
     CartModule,

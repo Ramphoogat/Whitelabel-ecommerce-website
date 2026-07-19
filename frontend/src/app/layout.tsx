@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Work_Sans, IBM_Plex_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/theme/theme-provider";
+import { QueryProvider } from "@/components/providers/query-provider";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -39,4 +40,11 @@ export default function RootLayout({
       lang="en"
       className={`${fraunces.variable} ${workSans.variable} ${plexMono.variable} h-full antialiased`}
     >
-      <body classNa
+      <body className="min-h-full flex flex-col">
+        <QueryProvider>
+          <ThemeProvider businessType="fashion">{children}</ThemeProvider>
+        </QueryProvider>
+      </body>
+    </html>
+  );
+}

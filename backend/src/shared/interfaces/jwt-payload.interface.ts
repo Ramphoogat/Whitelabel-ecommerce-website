@@ -5,3 +5,9 @@ export interface JwtStaffPayload {
   email: string;
   role: UserRole;
 }
+
+export interface JwtCustomerPayload {
+  sub: string; // customerId
+  email: string;
+  role: 'customer';
+}

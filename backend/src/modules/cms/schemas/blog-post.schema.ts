@@ -23,7 +23,7 @@ export class BlogPost extends Document {
   @Prop({ default: false })
   isPublished!: boolean;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   publishedAt!: Date | null;
 }
 

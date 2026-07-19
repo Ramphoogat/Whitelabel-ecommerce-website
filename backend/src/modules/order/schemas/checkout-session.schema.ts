@@ -36,7 +36,7 @@ export class CheckoutSession extends Document {
   @Prop({ required: true })
   totalCents!: number;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   couponCode!: string | null;
 
   @Prop({ default: 0 })
@@ -47,23 +47,23 @@ export class CheckoutSession extends Document {
 
   // Captured at checkout so a confirmation notification has somewhere to
   // go. Optional -- neither is required to complete a guest checkout.
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   contactEmail!: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   contactPhone!: string | null;
 
   @Prop({ required: true, enum: ['open', 'awaiting_payment', 'completed', 'expired'], default: 'open' })
   status!: CheckoutSessionStatus;
 
   // Set once the customer picks a mode/gateway on the checkout page (Phase 5).
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   paymentMode!: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   paymentGateway!: string | null;
 
-  @Prop({ default: null })
+  @Prop({ type: String, default: null })
   gatewayOrderId!: string | null;
 
   @Prop({ required: true })

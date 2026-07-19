@@ -22,7 +22,7 @@ export class User extends Document {
   @Prop({ default: true })
   isActive!: boolean;
 
-  @Prop({ default: null })
+  @Prop({ type: Date, default: null })
   lastLoginAt!: Date | null;
 }
 
