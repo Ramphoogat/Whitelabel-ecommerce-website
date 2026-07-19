@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+/*
+  Base palette — warm, minimal, slim.
+  Overridable at runtime per-store via ThemeProvider (inline style on <html>),
+  since organization.settings.theme is DB-stored, not a rebuild.
+*/
+:root {
+  --bone: #faf6ee;
+  --surface: #ffffff;
+  --ink: #211d18;
+  --ink-soft: #6b6355;
+  --line: #e7dfd0;
+  --line-soft: #f0eadd;
+
+  --accent: #bd5b39;
+  --accent-ink: #ffffff;
+  --accent-soft: #f3ded4;
+
+  --secondary: #5f6b4e;
+  --secondary-soft: #e3e6da;
+
+  --danger: #a3392c;
+  --success: #3f6b4a;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+
+  --font-display: var(--font-fraunces);
+  --font-body: var(--font-worksans);
+  --font-mono: var(--font-plexmono);
+}
+
+@theme inline {
+  --color-bone: var(--bone);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-secondary: var(--secondary);
+  --color-secondary-soft: var(--secondary-soft);
+  --color-danger: var(--danger);
+  --color-success: var(--success);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  border-color: var(--line);
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
