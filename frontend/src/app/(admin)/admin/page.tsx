@@ -9,8 +9,8 @@ export default function AdminDashboardPage() {
       <AdminTopbar title="Dashboard" />
       <div className="px-6 py-8">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {STATS.map((s) => (
-            <StatTile key={s.label} {...s} />
+          {STATS.map((s, i) => (
+            <StatTile key={s.label} {...s} index={i} />
           ))}
         </div>
 

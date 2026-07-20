@@ -1,35 +1,65 @@
 @import "tailwindcss";
 
 /*
-  Base palette — warm, minimal, slim.
-  Overridable at runtime per-store via ThemeProvider (inline style on <html>),
-  since organization.settings.theme is DB-stored, not a rebuild.
+  Creamy-icy design system — warm off-white bases against one committed
+  cool accent (glacier blue), cool charcoal-blue ink. Var NAMES are stable:
+  every surface (store, admin, auth) reads these, and ThemeProvider can
+  still override accent vars at runtime per-store (white-label §4).
+
+  Dark mode is a deliberate "arctic night" variant, applied via
+  [data-theme="dark"] on <html> — driven by a persisted user preference
+  (admin Settings), never by media query alone.
 */
 :root {
-  --bone: #faf6ee;
-  --surface: #ffffff;
-  --ink: #211d18;
-  --ink-soft: #6b6355;
-  --line: #e7dfd0;
-  --line-soft: #f0eadd;
+  --bone: #f6f3ec;
+  --surface: #fdfbf7;
+  --ink: #232830;
+  --ink-soft: #7c828c;
+  --line: #e4e0d4;
+  --line-soft: #edeadf;
 
-  --accent: #bd5b39;
-  --accent-ink: #ffffff;
-  --accent-soft: #f3ded4;
+  --accent: #4b9ec4;
+  --accent-ink: #0c2431;
+  --accent-soft: #dcecf4;
 
-  --secondary: #5f6b4e;
-  --secondary-soft: #e3e6da;
+  --secondary: #74b0a0;
+  --secondary-soft: #dceee7;
 
-  --danger: #a3392c;
-  --success: #3f6b4a;
+  --danger: #c4574a;
+  --success: #3e7d5e;
 
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 14px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
 
-  --font-display: var(--font-fraunces);
-  --font-body: var(--font-worksans);
+  --glass-bg: rgba(253, 251, 247, 0.66);
+  --shadow-soft: 0 2px 16px rgba(35, 40, 48, 0.06);
+
+  --font-display: var(--font-grotesk);
+  --font-body: var(--font-inter);
   --font-mono: var(--font-plexmono);
+}
+
+[data-theme="dark"] {
+  --bone: #10151a;
+  --surface: #171d24;
+  --ink: #e9edf0;
+  --ink-soft: #8b939d;
+  --line: #242c34;
+  --line-soft: #1c232a;
+
+  --accent: #6fb7d9;
+  --accent-ink: #0b1e28;
+  --accent-soft: #1c3341;
+
+  --secondary: #7cbcab;
+  --secondary-soft: #1d2f2a;
+
+  --danger: #d97564;
+  --success: #6cba91;
+
+  --glass-bg: rgba(23, 29, 36, 0.6);
+  --shadow-soft: 0 2px 18px rgba(0, 0, 0, 0.35);
 }
 
 @theme inline {
@@ -59,26 +89,91 @@
 html {
   color-scheme: light;
 }
+html[data-theme="dark"] {
+  color-scheme: dark;
+}
 
 body {
-  background: var(--bone);
+  background:
+    radial-gradient(ellipse 70% 45% at 50% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent),
+    var(--bone);
   color: var(--ink);
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.font-display {
+  font-style: normal !important;
+  letter-spacing: -0.02em;
+}
+
+/* Frosted glass panel — the system's core surface treatment. */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, var(--accent) 20%);
+  box-shadow: var(--shadow-soft);
+}
+
+/* Icy glow ring — derived from the live accent so retints carry through. */
+.glow-accent {
+  box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+.hover-glow:hover {
+  box-shadow: 0 0 28px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/*
+  Admin theme-studio structural knobs — attribute-driven so no component
+  forks: AdminThemeScope stamps data-density / data-panels, and these rules
+  restyle what's already there.
+*/
+[data-density="compact"] table td,
+[data-density="compact"] table th {
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+}
+[data-density="compact"] table {
+  font-size: 12px;
+}
+
+/* Flat panels: the glass treatment collapses to a quiet bordered surface. */
+[data-panels="flat"] .glass {
+  background: var(--surface);
+  backdrop-filter: none;
+  border: 1px solid var(--line);
+  box-shadow: none;
+}
+[data-panels="flat"] .hover-glow:hover,
+[data-panels="flat"] .glow-accent {
+  box-shadow: none;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-rise {
+  animation: rise 0.5s ease-out both;
 }
 
 .input-field {
   width: 100%;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
-  background: var(--bone);
+  background: var(--surface);
   padding: 0.65rem 0.9rem;
   font-size: 14px;
   color: var(--ink);
   outline: none;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .input-field:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 .input-field::placeholder {
   color: var(--ink-soft);

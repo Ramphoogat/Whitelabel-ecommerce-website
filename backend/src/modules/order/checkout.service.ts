@@ -8,6 +8,7 @@ import { ProductVariant, ProductVariantDocument } from '../catalog/schemas/produ
 import { CartService } from '../cart/cart.service';
 import { InventoryService, ReservationLineItem } from '../inventory/inventory.service';
 import { CouponService } from '../marketing/coupon.service';
+import { TaxService } from '../tax/tax.service';
 
 export const CHECKOUT_EXPIRY_QUEUE = 'checkout-expiry';
 const CHECKOUT_SESSION_TTL_MINUTES = 15;
@@ -22,6 +23,7 @@ export class CheckoutService {
     private readonly cartService: CartService,
     private readonly inventoryService: InventoryService,
     private readonly couponService: CouponService,
+    private readonly taxService: TaxService,
     @InjectQueue(CHECKOUT_EXPIRY_QUEUE) private readonly expiryQueue: Queue<{ sessionId: string }>,
   ) {}
 
@@ -53,13 +55,20 @@ export class CheckoutService {
       };
     });
 
-    const totalCents = lineItems.reduce((sum, li) => sum + li.unitPriceCents * li.quantity, 0);
+    const subtotalCents = lineItems.reduce((sum, li) => sum + li.unitPriceCents * li.quantity, 0);
+
+    // Calculate applicable taxes against the subtotal (no country/state context
+    // yet at session creation — those are set when the address is collected).
+    const { taxCents } = await this.taxService.calculateTax({ subtotalCents });
+
+    const totalCents = subtotalCents + taxCents;
     const expiresAt = new Date(Date.now() + CHECKOUT_SESSION_TTL_MINUTES * 60 * 1000);
 
     const session = await this.sessionModel.create({
       cartId: cart._id,
       items: lineItems,
-      subtotalCents: totalCents,
+      subtotalCents,
+      taxCents,
       totalCents,
       status: 'open',
       expiresAt,

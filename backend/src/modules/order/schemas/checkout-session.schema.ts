@@ -42,6 +42,9 @@ export class CheckoutSession extends Document {
   @Prop({ default: 0 })
   discountCents!: number;
 
+  @Prop({ default: 0 })
+  taxCents!: number;
+
   @Prop({ required: true, default: 'INR' })
   currency!: string;
 

@@ -53,6 +53,12 @@ export class CatalogAdminController {
     return this.catalogService.createProduct(dto);
   }
 
+  @Get('products')
+  @ApiOperation({ summary: 'List all products (any status) with their variants' })
+  listProducts() {
+    return this.catalogService.listProductsForAdmin();
+  }
+
   @Get('products/:id')
   @ApiOperation({ summary: 'Get one product with its variants, for editing' })
   getProduct(@Param('id') id: string) {

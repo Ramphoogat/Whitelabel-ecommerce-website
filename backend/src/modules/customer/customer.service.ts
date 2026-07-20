@@ -241,6 +241,18 @@ export class CustomerService {
       .sort({ createdAt: -1 });
   }
 
+  async getCustomerForAdmin(customerId: string): Promise<Record<string, unknown>> {
+    const customer = await this.customerModel.findById(customerId).select('-passwordHash').lean();
+    if (!customer) throw new NotFoundException('Customer not found');
+    const addresses = await this.addressModel.find({ customerId: customer._id }).lean();
+    const reviews = await this.reviewModel
+      .find({ customerId: customer._id })
+      .sort({ createdAt: -1 })
+      .limit(20)
+      .lean();
+    return { ...customer, addresses, reviews };
+  }
+
   async setActiveStatus(customerId: string, isActive: boolean) {
     const customer = await this.customerModel.findByIdAndUpdate(
       customerId,

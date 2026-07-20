@@ -5,14 +5,27 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Product } from "@/lib/data/products";
 import { formatPrice, unsplashUrl } from "@/lib/data/products";
+import { Tilt } from "./tilt";
+import { useStoreTheme } from "@/components/theme/theme-provider";
+import type { CardStyle } from "@/lib/theme/types";
+
+/** cardStyle knob: glass (translucent border + icy glow), flat (bare), outlined (solid frame, no glow). */
+const CARD_TILE_CLASSES: Record<CardStyle, string> = {
+  glass: "hover-glow border border-line/60 shadow-[var(--shadow-soft)]",
+  flat: "",
+  outlined: "border-[1.5px] border-ink/25",
+};
 
 export function ProductCard({ product }: { product: Product }) {
   const [activeColor, setActiveColor] = useState(product.colors[0]);
+  const { storeTheme } = useStoreTheme();
+  const tileClass = CARD_TILE_CLASSES[storeTheme.cardStyle] ?? CARD_TILE_CLASSES.glass;
 
   return (
     <Link href={`/products/${product.slug}`} className="group block">
+      <Tilt>
       <div
-        className="relative aspect-[4/5] overflow-hidden rounded-[var(--radius-lg)]"
+        className={`relative aspect-[4/5] overflow-hidden rounded-[var(--radius-lg)] ${tileClass}`}
         style={{ background: product.tone }}
       >
         <Image
@@ -27,8 +40,9 @@ export function ProductCard({ product }: { product: Product }) {
             New
           </span>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
       </div>
+      </Tilt>
 
       <div className="mt-3 flex items-start justify-between gap-2">
         <div>

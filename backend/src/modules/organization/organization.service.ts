@@ -27,10 +27,19 @@ export class OrganizationService {
   }
 
   async updateTheme(dto: UpdateThemeDto) {
+    return this.patchThemeField('theme', dto);
+  }
+
+  /** The dashboard's own look — stored beside the storefront theme, edited independently. */
+  async updateAdminTheme(dto: UpdateThemeDto) {
+    return this.patchThemeField('adminTheme', dto);
+  }
+
+  private async patchThemeField(field: 'theme' | 'adminTheme', dto: UpdateThemeDto) {
     await this.getSettings();
     const update: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(dto)) {
-      update[`theme.${key}`] = value;
+      update[`${field}.${key}`] = value;
     }
     return this.settingsModel.findOneAndUpdate({}, { $set: update }, { new: true, upsert: true });
   }

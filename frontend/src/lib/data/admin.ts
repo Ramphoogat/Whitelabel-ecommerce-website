@@ -8,7 +8,8 @@ export const STATS = [
 export type OrderStatus = "pending" | "processing" | "shipped" | "delivered" | "cancelled";
 
 export interface AdminOrder {
-  id: string;
+  _id: string;      // MongoDB ObjectId — used for detail page navigation
+  id: string;       // orderNumber — displayed in the table
   customer: string;
   date: string;
   items: number;
@@ -17,12 +18,12 @@ export interface AdminOrder {
 }
 
 export const RECENT_ORDERS: AdminOrder[] = [
-  { id: "ORD-10482", customer: "Nisha Verma", date: "2026-07-18", items: 3, total: "₹8,400", status: "processing" },
-  { id: "ORD-10481", customer: "Kabir Malhotra", date: "2026-07-18", items: 1, total: "₹2,800", status: "pending" },
-  { id: "ORD-10480", customer: "Ayesha Khan", date: "2026-07-17", items: 2, total: "₹6,200", status: "shipped" },
-  { id: "ORD-10479", customer: "Rohan Desai", date: "2026-07-17", items: 4, total: "₹11,900", status: "delivered" },
-  { id: "ORD-10478", customer: "Priya Nair", date: "2026-07-16", items: 1, total: "₹4,200", status: "cancelled" },
-  { id: "ORD-10477", customer: "Arjun Rao", date: "2026-07-16", items: 2, total: "₹5,600", status: "delivered" },
+  { _id: "demo-1", id: "ORD-10482", customer: "Nisha Verma", date: "2026-07-18", items: 3, total: "₹8,400", status: "processing" },
+  { _id: "demo-2", id: "ORD-10481", customer: "Kabir Malhotra", date: "2026-07-18", items: 1, total: "₹2,800", status: "pending" },
+  { _id: "demo-3", id: "ORD-10480", customer: "Ayesha Khan", date: "2026-07-17", items: 2, total: "₹6,200", status: "shipped" },
+  { _id: "demo-4", id: "ORD-10479", customer: "Rohan Desai", date: "2026-07-17", items: 4, total: "₹11,900", status: "delivered" },
+  { _id: "demo-5", id: "ORD-10478", customer: "Priya Nair", date: "2026-07-16", items: 1, total: "₹4,200", status: "cancelled" },
+  { _id: "demo-6", id: "ORD-10477", customer: "Arjun Rao", date: "2026-07-16", items: 2, total: "₹5,600", status: "delivered" },
 ];
 
 export const STATUS_STYLES: Record<OrderStatus, string> = {

@@ -1,0 +1,33 @@
+version: '3.9'
+
+# Spin up isolated MongoDB + Redis for the E2E test suite.
+# Usage:
+#   docker compose -f docker-compose.test.yml up -d
+#   npm run test:e2e
+#   docker compose -f docker-compose.test.yml down -v
+
+services:
+  mongo-test:
+    image: mongo:7
+    ports:
+      - '27018:27017'
+    environment:
+      MONGO_INITDB_DATABASE: store_test
+    tmpfs:
+      - /data/db       # in-memory for speed; wiped when container stops
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', 'db.adminCommand("ping")']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis-test:
+    image: redis:7-alpine
+    ports:
+      - '6380:6379'
+    command: redis-server --save ''   # disable AOF/RDB — ephemeral
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10

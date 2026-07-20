@@ -13,6 +13,8 @@ import { CartModule } from '../cart/cart.module';
 import { InventoryModule } from '../inventory/inventory.module';
 import { MarketingModule } from '../marketing/marketing.module';
 import { NotificationModule } from '../notification/notification.module';
+import { PdfService } from '../../providers/pdf/pdf.service';
+import { TaxModule } from '../tax/tax.module';
 
 @Module({
   imports: [
@@ -26,9 +28,10 @@ import { NotificationModule } from '../notification/notification.module';
     InventoryModule,
     MarketingModule,
     NotificationModule,
+    TaxModule,
   ],
   controllers: [CheckoutController, OrderAdminController],
-  providers: [CheckoutService, OrderService, CheckoutExpiryProcessor],
+  providers: [CheckoutService, OrderService, CheckoutExpiryProcessor, PdfService],
   exports: [CheckoutService, OrderService],
 })
 export class OrderModule {}

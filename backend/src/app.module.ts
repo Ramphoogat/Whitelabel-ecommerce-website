@@ -23,6 +23,11 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { OrganizationModule } from './modules/organization/organization.module';
+import { TaxModule } from './modules/tax/tax.module';
+import { CurrencyModule } from './modules/currency/currency.module';
+import { MediaModule } from './modules/media/media.module';
+import { SearchModule } from './modules/search/search.module';
+import { SchedulerModule } from './modules/scheduler/scheduler.module';
 import { AllExceptionsFilter } from './shared/filters/all-exceptions.filter';
 import { MongoExceptionsFilter } from './shared/filters/mongo-exceptions.filter';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
@@ -68,6 +73,11 @@ import { LoggingInterceptor } from './shared/interceptors/logging.interceptor';
     NotificationModule,
     AnalyticsModule,
     OrganizationModule,
+    TaxModule,
+    CurrencyModule,
+    MediaModule,
+    SearchModule,
+    SchedulerModule,
   ],
   providers: [
     // Order matters: the specific Mongo filter must be registered before

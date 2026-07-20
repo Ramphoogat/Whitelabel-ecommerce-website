@@ -86,6 +86,20 @@ export default function AccountPage() {
           </div>
         </div>
       </div>
+
+      {/* Orders */}
+      <div className="mt-8 rounded-[var(--radius-lg)] border border-line/70 bg-surface p-6">
+        <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">
+          Order history
+        </p>
+        <p className="mt-3 text-[13px] text-ink-soft">
+          Order history will appear here once you&apos;ve placed an order. Browse the{" "}
+          <a href="/products" className="text-ink underline underline-offset-2 hover:opacity-70">
+            collection
+          </a>{" "}
+          to get started.
+        </p>
+      </div>
     </section>
   );
 }

@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { ACCENT_SWATCHES } from "@/lib/theme/presets";
+import { ThemeCustomizer } from "./theme-customizer";
+import { useUiStore } from "@/stores/ui-store";
 
 const TABS = ["General", "Theme", "Organization", "Notifications"] as const;
 type Tab = (typeof TABS)[number];
 
 export function SettingsTabs() {
   const [tab, setTab] = useState<Tab>("General");
-  const [accent, setAccent] = useState(ACCENT_SWATCHES[0].accent);
+  const { themeMode, setThemeMode } = useUiStore();
 
   return (
     <div>
@@ -28,7 +29,7 @@ export function SettingsTabs() {
         ))}
       </div>
 
-      <div className="mt-6 max-w-xl">
+      <div className={tab === "Theme" ? "mt-6" : "mt-6 max-w-xl"}>
         {tab === "General" && (
           <div className="space-y-4">
             <label>
@@ -54,24 +55,31 @@ export function SettingsTabs() {
 
         {tab === "Theme" && (
           <div>
-            <p className="font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">Brand accent</p>
-            <div className="mt-3 flex gap-2.5">
-              {ACCENT_SWATCHES.map((s) => (
+            <ThemeCustomizer />
+
+            <p className="mt-10 border-t border-line/70 pt-8 font-mono text-[11px] uppercase tracking-[0.08em] text-ink-soft">
+              Dashboard appearance
+            </p>
+            <div className="mt-3 flex gap-2">
+              {(["light", "dark"] as const).map((mode) => (
                 <button
-                  key={s.name}
-                  onClick={() => setAccent(s.accent)}
-                  aria-label={s.name}
-                  className="size-8 rounded-full transition-transform hover:scale-110"
+                  key={mode}
+                  type="button"
+                  onClick={() => setThemeMode(mode)}
+                  aria-pressed={themeMode === mode}
+                  className="rounded-full border px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.1em] transition-colors"
                   style={{
-                    background: s.accent,
-                    boxShadow: accent === s.accent ? "0 0 0 2px var(--bone), 0 0 0 3.5px var(--ink)" : "0 0 0 1px rgba(0,0,0,0.1)",
+                    borderColor: themeMode === mode ? "var(--accent)" : "var(--line)",
+                    background: themeMode === mode ? "var(--accent-soft)" : "transparent",
+                    color: themeMode === mode ? "var(--accent)" : "var(--ink)",
                   }}
-                />
+                >
+                  {mode === "light" ? "☀ Light" : "☾ Dark"}
+                </button>
               ))}
             </div>
-            <p className="mt-4 text-[13px] leading-relaxed text-ink-soft">
-              This colour updates <code className="font-mono text-ink">organization.settings.theme</code> and
-              takes effect on the storefront instantly — no redeploy.
+            <p className="mt-3 text-[13px] leading-relaxed text-ink-soft">
+              Saved to your preferences — the dashboard keeps this choice across sessions.
             </p>
           </div>
         )}
@@ -111,9 +119,11 @@ export function SettingsTabs() {
           </div>
         )}
 
-        <button className="mt-8 rounded-full bg-accent px-6 py-3 font-mono text-[12px] uppercase tracking-[0.14em] text-accent-ink hover:opacity-90">
-          Save changes
-        </button>
+        {tab !== "Theme" && (
+          <button className="mt-8 rounded-full bg-accent px-6 py-3 font-mono text-[12px] uppercase tracking-[0.14em] text-accent-ink hover:opacity-90">
+            Save changes
+          </button>
+        )}
       </div>
     </div>
   );

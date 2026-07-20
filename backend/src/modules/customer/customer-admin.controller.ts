@@ -19,6 +19,12 @@ export class CustomerAdminController {
     return this.customerService.listCustomersForAdmin();
   }
 
+  @Get(':id')
+  @ApiOperation({ summary: 'Get one customer with their addresses and review history' })
+  getCustomer(@Param('id') id: string): Promise<Record<string, unknown>> {
+    return this.customerService.getCustomerForAdmin(id);
+  }
+
   @Patch(':id/status')
   @ApiOperation({ summary: 'Activate or deactivate a customer account' })
   setActiveStatus(@Param('id') id: string, @Body('isActive') isActive: boolean) {

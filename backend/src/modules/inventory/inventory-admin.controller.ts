@@ -14,6 +14,12 @@ import { Roles } from '../../shared/decorators/roles.decorator';
 export class InventoryAdminController {
   constructor(private readonly inventoryService: InventoryService) {}
 
+  @Get()
+  @ApiOperation({ summary: 'List all inventory items with variant/product info' })
+  listAll() {
+    return this.inventoryService.listAll();
+  }
+
   @Get('variant/:variantId')
   @ApiOperation({ summary: 'Get current stock for one variant' })
   getStock(@Param('variantId') variantId: string) {

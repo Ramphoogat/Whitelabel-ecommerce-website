@@ -31,6 +31,11 @@ export class OrganizationAdminController {
     return this.organizationService.updateTheme(dto);
   }
 
+  @Patch('admin-theme')
+  updateAdminTheme(@Body() dto: UpdateThemeDto) {
+    return this.organizationService.updateAdminTheme(dto);
+  }
+
   @Patch('origin-address')
   updateOriginAddress(@Body() dto: UpdateOriginAddressDto) {
     return this.organizationService.updateOriginAddress(dto);

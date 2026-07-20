@@ -176,6 +176,42 @@ export class InventoryService {
     }
   }
 
+  async listAll(): Promise<unknown[]> {
+    return this.inventoryModel.aggregate([
+      {
+        $lookup: {
+          from: 'product_variants',
+          localField: 'variantId',
+          foreignField: '_id',
+          as: 'variant',
+          pipeline: [{ $project: { sku: 1, productId: 1 } }],
+        },
+      },
+      { $unwind: { path: '$variant', preserveNullAndEmptyArrays: true } },
+      {
+        $lookup: {
+          from: 'products',
+          localField: 'variant.productId',
+          foreignField: '_id',
+          as: 'product',
+          pipeline: [{ $project: { title: 1 } }],
+        },
+      },
+      { $unwind: { path: '$product', preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          variantId: 1,
+          availableQuantity: 1,
+          reservedQuantity: 1,
+          lowStockThreshold: 1,
+          sku: { $ifNull: ['$variant.sku', '—'] },
+          productTitle: { $ifNull: ['$product.title', '—'] },
+        },
+      },
+      { $sort: { productTitle: 1, sku: 1 } },
+    ]);
+  }
+
   async listLowStock(thresholdOverride?: number) {
     const items = await this.inventoryModel.find().lean();
     return items.filter(

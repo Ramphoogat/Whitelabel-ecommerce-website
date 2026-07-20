@@ -1,17 +1,7 @@
 import { AdminTopbar } from "@/components/admin/topbar";
-import { BarChart } from "@/components/admin/bar-chart";
+import { RevenueChart } from "@/components/admin/revenue-chart";
 import { StatTile } from "@/components/admin/stat-tile";
 import { STATS } from "@/lib/data/admin";
-
-const WEEKLY_REVENUE = [
-  { label: "Mon", value: 42000 },
-  { label: "Tue", value: 38000 },
-  { label: "Wed", value: 51000 },
-  { label: "Thu", value: 47000 },
-  { label: "Fri", value: 63000 },
-  { label: "Sat", value: 71000 },
-  { label: "Sun", value: 58000 },
-];
 
 const TOP_PRODUCTS = [
   { name: "Field Overshirt", sold: 128 },
@@ -26,20 +16,15 @@ export default function AdminAnalyticsPage() {
       <AdminTopbar title="Analytics" />
       <div className="space-y-10 px-6 py-8">
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {STATS.map((s) => (
-            <StatTile key={s.label} {...s} />
+          {STATS.map((s, i) => (
+            <StatTile key={s.label} {...s} index={i} />
           ))}
         </div>
 
-        <section className="rounded-[var(--radius-lg)] border border-line/70 bg-surface p-6">
-          <h2 className="font-display text-lg italic text-ink">Revenue — Last 7 Days</h2>
-          <div className="mt-6">
-            <BarChart data={WEEKLY_REVENUE} />
-          </div>
-        </section>
+        <RevenueChart />
 
         <section>
-          <h2 className="font-display text-lg italic text-ink">Top Products</h2>
+          <h2 className="font-display text-lg font-medium text-ink">Top Products</h2>
           <div className="mt-4 overflow-hidden rounded-[var(--radius-lg)] border border-line/70 bg-surface">
             <table className="w-full text-left text-[13px]">
               <thead>

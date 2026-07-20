@@ -63,6 +63,26 @@ export class CatalogService {
     return this.productModel.create({ ...dto, slug, status: dto.status || 'draft' });
   }
 
+  async listProductsForAdmin(): Promise<Record<string, unknown>[]> {
+    const products = await this.productModel.find().sort({ createdAt: -1 }).lean();
+    const variants = await this.variantModel
+      .find({ productId: { $in: products.map((p) => p._id) } })
+      .lean();
+
+    const variantsByProduct = new Map<string, typeof variants>();
+    for (const variant of variants) {
+      const key = variant.productId.toString();
+      const list = variantsByProduct.get(key) ?? [];
+      list.push(variant);
+      variantsByProduct.set(key, list);
+    }
+
+    return products.map((product) => ({
+      ...product,
+      variants: variantsByProduct.get(product._id.toString()) ?? [],
+    }));
+  }
+
   async getProductForAdmin(id: string): Promise<Record<string, unknown>> {
     const product = await this.productModel.findById(id).lean();
     if (!product) throw new NotFoundException('Product not found');
