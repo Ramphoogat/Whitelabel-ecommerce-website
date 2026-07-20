@@ -36,25 +36,25 @@ export function ProductCard({ product }: { product: Product }) {
           className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
         />
         {product.new && (
-          <span className="absolute left-3 top-3 rounded-full bg-surface/90 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-ink">
+          <span className="absolute left-3.5 top-3.5 rounded-full bg-bone/95 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.16em] text-ink/80">
             New
           </span>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
       </div>
       </Tilt>
 
-      <div className="mt-3 flex items-start justify-between gap-2">
+      <div className="mt-4 flex items-start justify-between gap-2">
         <div>
-          <h3 className="font-display text-[15px] leading-tight text-ink">{product.name}</h3>
-          <p className="mt-0.5 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">
+          <h3 className="font-display text-[15px] leading-snug text-ink">{product.name}</h3>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft/70">
             {product.category}
           </p>
         </div>
-        <div className="text-right shrink-0">
+        <div className="text-right shrink-0 pt-0.5">
           <p className="font-mono text-[13px] text-ink">{formatPrice(product.price)}</p>
           {product.compareAtPrice && (
-            <p className="font-mono text-[11px] text-ink-soft line-through">
+            <p className="font-mono text-[11px] text-ink-soft/60 line-through">
               {formatPrice(product.compareAtPrice)}
             </p>
           )}

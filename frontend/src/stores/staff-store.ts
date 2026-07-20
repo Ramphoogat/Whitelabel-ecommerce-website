@@ -6,6 +6,9 @@ export interface StaffUser {
   email: string;
   name: string;
   role: string;
+  avatarUrl?: string;
+  bio?: string;
+  phone?: string;
 }
 
 interface StaffState {
@@ -13,6 +16,7 @@ interface StaffState {
   refreshToken: string | null;
   user: StaffUser | null;
   setSession: (session: { accessToken: string; refreshToken: string; user: StaffUser }) => void;
+  updateUser: (patch: Partial<StaffUser>) => void;
   clearSession: () => void;
 }
 
@@ -25,6 +29,8 @@ export const useStaffStore = create<StaffState>()(
       user: null,
       setSession: ({ accessToken, refreshToken, user }) =>
         set({ accessToken, refreshToken, user }),
+      updateUser: (patch) =>
+        set((s) => ({ user: s.user ? { ...s.user, ...patch } : s.user })),
       clearSession: () => set({ accessToken: null, refreshToken: null, user: null }),
     }),
     { name: "staff-storage" },

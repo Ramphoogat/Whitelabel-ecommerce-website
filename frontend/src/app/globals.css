@@ -1,39 +1,41 @@
 @import "tailwindcss";
 
 /*
-  Creamy-icy design system — warm off-white bases against one committed
-  cool accent (glacier blue), cool charcoal-blue ink. Var NAMES are stable:
-  every surface (store, admin, auth) reads these, and ThemeProvider can
-  still override accent vars at runtime per-store (white-label §4).
+  Warm-editorial design system — deep parchment grounds, cognac/amber accent,
+  rich warm ink. Var NAMES are stable: every surface (store, admin, auth)
+  reads these, and ThemeProvider can still override accent vars at runtime
+  per-store (white-label §4).
 
-  Dark mode is a deliberate "arctic night" variant, applied via
+  Dark mode is a deliberate "burnt oak" variant, applied via
   [data-theme="dark"] on <html> — driven by a persisted user preference
   (admin Settings), never by media query alone.
 */
 :root {
-  --bone: #f6f3ec;
-  --surface: #fdfbf7;
-  --ink: #232830;
-  --ink-soft: #7c828c;
-  --line: #e4e0d4;
-  --line-soft: #edeadf;
+  --bone: #f3ece0;
+  --surface: #f8f2e8;
+  --ink: #1c1812;
+  --ink-soft: #7a6d5e;
+  --line: #ddd0bc;
+  --line-soft: #e8dece;
 
-  --accent: #4b9ec4;
-  --accent-ink: #0c2431;
-  --accent-soft: #dcecf4;
+  --accent: #9d6035;
+  --accent-ink: #fdf6ee;
+  --accent-soft: #f0deca;
 
-  --secondary: #74b0a0;
-  --secondary-soft: #dceee7;
+  --secondary: #7a9870;
+  --secondary-soft: #deebd8;
 
-  --danger: #c4574a;
-  --success: #3e7d5e;
+  --danger: #c0473a;
+  --success: #3a7850;
 
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
 
-  --glass-bg: rgba(253, 251, 247, 0.66);
-  --shadow-soft: 0 2px 16px rgba(35, 40, 48, 0.06);
+  --section-y: 5.5rem;
+
+  --glass-bg: rgba(248, 242, 232, 0.70);
+  --shadow-soft: 0 2px 20px rgba(28, 24, 18, 0.08);
 
   --font-display: var(--font-grotesk);
   --font-body: var(--font-inter);
@@ -41,25 +43,25 @@
 }
 
 [data-theme="dark"] {
-  --bone: #10151a;
-  --surface: #171d24;
-  --ink: #e9edf0;
-  --ink-soft: #8b939d;
-  --line: #242c34;
-  --line-soft: #1c232a;
+  --bone: #141009;
+  --surface: #1c1710;
+  --ink: #f0e8d8;
+  --ink-soft: #9a8a74;
+  --line: #2e2418;
+  --line-soft: #241c12;
 
-  --accent: #6fb7d9;
-  --accent-ink: #0b1e28;
-  --accent-soft: #1c3341;
+  --accent: #c47a44;
+  --accent-ink: #1a0c00;
+  --accent-soft: #2e1c0a;
 
-  --secondary: #7cbcab;
-  --secondary-soft: #1d2f2a;
+  --secondary: #8aab7a;
+  --secondary-soft: #1a2814;
 
-  --danger: #d97564;
-  --success: #6cba91;
+  --danger: #d9705e;
+  --success: #6abf88;
 
-  --glass-bg: rgba(23, 29, 36, 0.6);
-  --shadow-soft: 0 2px 18px rgba(0, 0, 0, 0.35);
+  --glass-bg: rgba(28, 23, 16, 0.70);
+  --shadow-soft: 0 2px 22px rgba(0, 0, 0, 0.45);
 }
 
 @theme inline {
@@ -95,7 +97,8 @@ html[data-theme="dark"] {
 
 body {
   background:
-    radial-gradient(ellipse 70% 45% at 50% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent),
+    radial-gradient(ellipse 80% 50% at 50% -5%, color-mix(in srgb, var(--accent) 7%, transparent), transparent),
+    radial-gradient(ellipse 40% 30% at 90% 110%, color-mix(in srgb, var(--secondary) 5%, transparent), transparent),
     var(--bone);
   color: var(--ink);
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;

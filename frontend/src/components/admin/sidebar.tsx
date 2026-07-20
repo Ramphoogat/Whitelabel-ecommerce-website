@@ -90,19 +90,6 @@ export function AdminSidebar() {
             {user?.name} · {user?.role}
           </p>
         )}
-        <button
-          type="button"
-          onClick={() => {
-            clearSession();
-            router.replace("/staff-login");
-          }}
-          title={rail ? "Sign out" : undefined}
-          className={`mt-1 block w-full rounded-[var(--radius-sm)] font-mono uppercase text-ink-soft transition-colors hover:bg-line-soft hover:text-ink ${
-            rail ? "px-0 py-2 text-center text-[11px]" : compact ? "px-2.5 py-1.5 text-left text-[11px]" : "px-3 py-2 text-left text-[12px] tracking-[0.08em]"
-          }`}
-        >
-          {rail ? "⏻" : "Sign out"}
-        </button>
       </div>
     </aside>
   );

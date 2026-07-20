@@ -8,32 +8,32 @@ import { useStoreTheme } from "@/components/theme/theme-provider";
 function HeroCopy({ centered = false }: { centered?: boolean }) {
   return (
     <div className={centered ? "mx-auto max-w-2xl text-center" : ""}>
-      <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
+      <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-accent/80">
         Autumn Collection — Week 03
       </p>
       <h1
-        className={`mt-4 font-display font-medium leading-[0.98] text-ink ${centered ? "" : "max-w-[14ch]"}`}
-        style={{ fontSize: "calc(clamp(2.5rem, 7vw, 4.5rem) * var(--type-display, 1))" }}
+        className={`mt-5 font-display font-medium leading-[0.95] text-ink ${centered ? "" : "max-w-[13ch]"}`}
+        style={{ fontSize: "calc(clamp(2.8rem, 7.5vw, 5rem) * var(--type-display, 1))" }}
       >
         Built to be worn, not just bought.
       </h1>
       <p
-        className={`mt-6 leading-relaxed text-ink-soft ${centered ? "mx-auto" : ""} max-w-sm`}
+        className={`mt-7 leading-[1.7] text-ink-soft ${centered ? "mx-auto" : ""} max-w-[30ch]`}
         style={{ fontSize: "calc(15px * var(--type-body, 1))" }}
       >
         Every piece is cut from natural fibre, finished by hand, and made in
         small runs — so what you buy stays yours, not a trend&apos;s.
       </p>
-      <div className={`mt-7 flex items-center gap-3 ${centered ? "justify-center" : ""}`}>
+      <div className={`mt-9 flex items-center gap-4 ${centered ? "justify-center" : ""}`}>
         <Link
           href="/products"
-          className="glow-accent inline-flex items-center gap-2 rounded-full bg-accent px-6 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-accent-ink transition-transform hover:scale-[1.03]"
+          className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.14em] text-accent-ink transition-all hover:brightness-110"
         >
           Shop the collection →
         </Link>
         <Link
           href="/products?filter=new"
-          className="inline-flex items-center gap-2 rounded-full border border-line px-6 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-ink transition-colors hover:border-accent"
+          className="inline-flex items-center gap-2 rounded-full border border-ink/20 px-7 py-3.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink transition-colors hover:border-accent hover:text-accent"
         >
           New arrivals
         </Link>
@@ -104,22 +104,23 @@ export function StoreHero() {
     <>
       <section
         className="mx-auto max-w-6xl px-5 sm:px-8"
-        style={{ paddingTop: "calc(var(--section-y, 4rem) * 0.9)", paddingBottom: "var(--section-y, 4rem)" }}
+        style={{ paddingTop: "calc(var(--section-y, 5.5rem) * 1.1)", paddingBottom: "calc(var(--section-y, 5.5rem) * 0.9)" }}
       >
-        <div className="grid items-center gap-10 md:grid-cols-[1.2fr_1fr]">
+        <div className="grid items-center gap-12 md:grid-cols-[1.15fr_1fr]">
           <HeroCopy />
         </div>
       </section>
       <section className="mx-auto max-w-6xl px-5 sm:px-8">
-        <div className="relative aspect-[16/7] overflow-hidden rounded-[var(--radius-lg)]">
+        <div className="relative aspect-[16/8] overflow-hidden rounded-[var(--radius-lg)]" style={{ boxShadow: "0 8px 48px rgba(28,24,18,0.14)" }}>
           <Image
-            src={unsplashUrl(HERO_IMAGE, 1600)}
+            src={unsplashUrl(HERO_IMAGE, 1800)}
             alt="Autumn collection, editorial"
             fill
             priority
             sizes="100vw"
-            className="object-cover opacity-90"
+            className="object-cover"
           />
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/10 to-transparent" />
         </div>
       </section>
     </>

@@ -73,26 +73,26 @@ export function StoreHeader() {
   const style = storeTheme.headerStyle;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-line/70 bg-bone/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line/60 bg-bone/92 backdrop-blur-md">
       {style === "centered" ? (
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="relative flex h-14 items-center justify-center">
+          <div className="relative flex h-16 items-center justify-center">
             <Wordmark />
             <div className="absolute right-0">
               <AccountAndCart />
             </div>
           </div>
-          <div className="flex h-10 items-start justify-center border-t border-line/50">
+          <div className="flex h-10 items-start justify-center border-t border-line/40">
             <NavLinks className="hidden pt-2.5 md:flex" />
           </div>
         </div>
       ) : style === "minimal" ? (
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-5 sm:px-8">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
           <Wordmark />
           <AccountAndCart />
         </div>
       ) : (
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+        <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 sm:px-8">
           <Wordmark />
           <NavLinks className="hidden md:flex" />
           <AccountAndCart />

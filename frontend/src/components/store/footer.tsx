@@ -28,8 +28,8 @@ const COLUMNS = [
 
 export function StoreFooter() {
   return (
-    <footer className="mt-24 border-t border-line/70">
-      <div className="mx-auto max-w-6xl px-5 py-14 sm:px-8">
+    <footer className="border-t border-line/50" style={{ marginTop: "var(--section-y, 5.5rem)" }}>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8" style={{ paddingBlock: "calc(var(--section-y, 5.5rem) * 0.9)" }}>
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           <div className="col-span-2 sm:col-span-1">
             <p className="font-display text-lg italic text-ink">Aldergate & Co.</p>
