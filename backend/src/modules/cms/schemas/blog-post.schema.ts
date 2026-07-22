@@ -8,7 +8,7 @@ export class BlogPost extends Document {
   @Prop({ required: true })
   title!: string;
 
-  @Prop({ required: true, unique: true, lowercase: true, trim: true })
+  @Prop({ required: true, lowercase: true, trim: true })
   slug!: string;
 
   @Prop({ default: '' })

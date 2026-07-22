@@ -1,19 +1,17 @@
 import { AdminTopbar } from "@/components/admin/topbar";
-import { GatewayToggleList } from "@/components/admin/gateway-toggle-list";
+import { PaymentsManager } from "@/components/admin/payments-manager";
 
 export default function AdminPaymentsPage() {
   return (
     <>
       <AdminTopbar title="Payments" />
       <div className="px-6 py-8">
-        <p className="max-w-xl text-[13px] leading-relaxed text-ink-soft">
-          Toggle a gateway off and it disappears from checkout immediately — no
-          deploy needed. Customers see payment <em>modes</em> (UPI, Card,
-          Netbanking); each mode reveals whichever active gateways support it.
+        <p className="mb-6 max-w-2xl text-[15px] leading-relaxed text-ink">
+          Manage payment gateways, configure API keys, and control which payment modes are
+          available at checkout. Toggle a gateway off and it disappears from checkout
+          immediately — no deploy needed.
         </p>
-        <div className="mt-5">
-          <GatewayToggleList />
-        </div>
+        <PaymentsManager />
       </div>
     </>
   );

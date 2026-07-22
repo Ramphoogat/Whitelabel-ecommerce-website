@@ -37,7 +37,7 @@ export class Order extends Document {
   @Prop({ type: Types.ObjectId, ref: 'Customer', default: null })
   customerId!: Types.ObjectId | null; // null = guest order
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   orderNumber!: string;
 
   @Prop({ type: [OrderLineItemSchema], default: [] })

@@ -6,10 +6,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <AdminGuard>
       <AdminThemeScope>
-        <div className="flex min-h-full flex-1 bg-bone text-ink">
+        <div className="flex h-screen overflow-hidden bg-bone text-[15px] text-ink [&_th]:text-[11px] [&_.font-mono]:tracking-[0.04em]">
           <AdminSidebar />
-          {/* min-w-0 stops wide children (tables, the theme-studio preview) from forcing page-level horizontal scroll */}
-          <div className="min-w-0 flex-1">{children}</div>
+          {/* min-w-0 stops wide children from forcing horizontal scroll; overflow-y-auto makes only this column scroll */}
+          <div className="min-w-0 flex-1 overflow-y-auto">{children}</div>
         </div>
       </AdminThemeScope>
     </AdminGuard>

@@ -121,10 +121,15 @@ export interface AdminApiOrder {
   status: string;
   createdAt: string;
   items: AdminApiOrderItem[];
+  contactPhone?: string | null;
   shippingAddress?: {
     fullName?: string;
     line1?: string;
+    line2?: string;
     city?: string;
+    state?: string;
+    postalCode?: string;
+    country?: string;
     state?: string;
     postalCode?: string;
     country?: string;
@@ -295,9 +300,30 @@ export function createBanner(input: { title: string; placement: string; imageUrl
 
 export interface AdminOrganizationSettings {
   storeName: string;
+  tagline: string;
   businessType: string;
+  legalName: string;
+  taxId: string;
+  supportEmail: string;
+  supportPhone: string;
+  website: string;
+  address: {
+    line1: string;
+    line2: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
   currency: string;
   language: string;
+  timezone: string;
+  socials: {
+    instagram: string;
+    twitter: string;
+    facebook: string;
+    tiktok: string;
+  };
   theme: Partial<StoreThemeConfig>;
   adminTheme: Partial<StoreThemeConfig>;
 }
@@ -306,6 +332,13 @@ export type ThemeScope = "store" | "admin";
 
 export function getOrganizationSettings() {
   return staffRequest<AdminOrganizationSettings>("/admin/organization/settings");
+}
+
+export function updateOrganizationSettings(input: Partial<AdminOrganizationSettings>) {
+  return staffRequest<AdminOrganizationSettings>("/admin/organization/settings", {
+    method: "PATCH",
+    body: input,
+  });
 }
 
 export function updateOrganizationTheme(scope: ThemeScope, input: Partial<StoreThemeConfig>) {

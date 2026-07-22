@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useStaffStore } from "@/stores/staff-store";
 import { useAdminTheme } from "./admin-theme-scope";
+import { useStoreSettings } from "@/stores/store-settings-store";
 
 const LIVE_LINKS = [
   { label: "Dashboard",  href: "/admin" },
@@ -36,26 +37,30 @@ export function AdminSidebar() {
   const router = useRouter();
   const { user, clearSession } = useStaffStore();
   const { sidebarStyle } = useAdminTheme();
+  const { settings } = useStoreSettings();
 
-  const rail = sidebarStyle === "rail";
-  const compact = sidebarStyle === "compact";
+  const onThemePage = pathname === "/admin/settings";
+  const effectiveStyle = onThemePage && sidebarStyle === "expanded" ? "compact" : sidebarStyle;
 
-  const width = rail ? "w-16" : compact ? "w-44" : "w-56";
+  const rail = effectiveStyle === "rail";
+  const compact = effectiveStyle === "compact";
+
+  const width = rail ? "w-16" : compact ? "w-55" : "w-55";
 
   return (
     <aside className={`hidden ${width} shrink-0 border-r border-line/70 bg-surface/60 md:flex md:flex-col`}>
       <div className={`flex h-16 items-center border-b border-line/70 ${rail ? "justify-center px-0" : compact ? "px-4" : "px-6"}`}>
         <Link href="/admin" className={`font-display italic text-ink ${rail ? "text-xl" : "text-lg"}`}>
-          {rail ? "A" : "Aldergate"}
+          {rail ? "S" : "Shoplux"}
         </Link>
         {!rail && (
-          <span className="ml-2 rounded-full bg-line-soft px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-ink-soft">
+          <span className="ml-2 rounded-full bg-bone px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-ink-soft">
             Admin
           </span>
         )}
       </div>
 
-      <nav className={`flex-1 space-y-0.5 overflow-y-auto py-5 ${rail ? "px-2" : compact ? "px-2" : "px-3"}`}>
+      <nav className={`flex flex-1 flex-col space-y-1 overflow-y-auto py-5 ${rail ? "px-2" : compact ? "px-2" : "px-3"}`}>
         {LIVE_LINKS.map((item) => {
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
           return (
@@ -65,10 +70,10 @@ export function AdminSidebar() {
               title={rail ? item.label : undefined}
               className={`block rounded-[var(--radius-sm)] font-mono uppercase transition-all ${
                 rail
-                  ? "px-0 py-2 text-center text-[11px] tracking-[0.05em]"
+                  ? "px-1 py-3 text-center text-[20px] tracking-[0.05em]"
                   : compact
-                    ? "px-2.5 py-1.5 text-[11px] tracking-[0.06em]"
-                    : "px-3 py-2 text-[12px] tracking-[0.08em]"
+                    ? "px-3 py-2 text-[14px] tracking-[0.06em]"
+                    : "px-3 py-2.5 text-[14px] tracking-[0.08em]"
               }`}
               style={{
                 background: active ? "var(--accent-soft)" : "transparent",
@@ -85,8 +90,25 @@ export function AdminSidebar() {
       </nav>
 
       <div className={`border-t border-line/70 py-4 ${rail ? "px-2" : "px-3"}`}>
+        {/* Go to Store */}
+        <Link
+          href="/store"
+          target="_blank"
+          title={rail ? "Go to Store" : undefined}
+          className={`mb-3 flex items-center gap-2 rounded-[var(--radius-sm)] border border-line/70 font-mono uppercase tracking-[0.08em] text-ink-soft transition-all hover:border-accent hover:text-accent ${
+            rail ? "justify-center px-1 py-2.5 text-[18px]" : compact ? "px-3 py-2 text-[12px]" : "px-3 py-2 text-[12px]"
+          }`}
+        >
+          {rail ? "↗" : (
+            <>
+              <span className="text-[13px]">↗</span>
+              Go to Store
+            </>
+          )}
+        </Link>
+
         {!rail && (
-          <p className={`font-mono text-[10px] uppercase tracking-[0.12em] text-ink-soft ${compact ? "px-2.5" : "px-3"}`}>
+          <p className={`font-mono text-[14px] uppercase tracking-[0.12em] text-ink-soft ${compact ? "px-2.5" : "px-3"}`}>
             {user?.name} · {user?.role}
           </p>
         )}

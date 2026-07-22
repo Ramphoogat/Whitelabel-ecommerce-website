@@ -6,7 +6,7 @@ export type NotificationTemplateDocument = HydratedDocument<NotificationTemplate
 
 @Schema({ timestamps: true, collection: 'notification_templates' })
 export class NotificationTemplate extends Document {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   key!: string;
 
   @Prop({ required: true, enum: ['email', 'sms'] })

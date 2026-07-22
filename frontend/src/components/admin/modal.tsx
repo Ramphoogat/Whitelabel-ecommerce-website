@@ -7,11 +7,13 @@ export function Modal({
   open,
   onClose,
   children,
+  wide = false,
 }: {
   title: string;
   open: boolean;
   onClose: () => void;
   children: React.ReactNode;
+  wide?: boolean;
 }) {
   useEffect(() => {
     if (!open) return;
@@ -25,7 +27,7 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-5">
       <button aria-label="Close" onClick={onClose} className="absolute inset-0 bg-ink/25 backdrop-blur-[2px]" />
-      <div className="glass animate-rise relative w-full max-w-md rounded-[var(--radius-lg)] bg-surface p-6">
+      <div className={`animate-rise relative w-full rounded-[var(--radius-lg)] border border-line/70 bg-surface p-6 ${wide ? "max-w-4xl" : "max-w-md"}`} style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.18)" }}>
         <div className="flex items-center justify-between">
           <h2 className="font-display text-lg font-medium text-ink">{title}</h2>
           <button

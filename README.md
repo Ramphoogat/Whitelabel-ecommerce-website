@@ -41,7 +41,7 @@ A **white-label, multi-tenant e-commerce platform** that can be deployed as any 
 ### Admin Dashboard
 - **Dashboard** — revenue charts, stat tiles, and key business metrics
 - **Products** — create, edit, and delete products with variants, images, and SEO fields
-- **Orders** — view, filter, and manage orders; update order status
+- **Orders** — view, filter, and manage orders; update order status; click any row to expand inline customer address + visual order progress tracker
 - **Inventory** — stock levels, low-stock alerts, and adjustments
 - **Customers** — list, search, and inspect customer records
 - **Marketing** — coupon codes (percentage / fixed / free-shipping), promotional banners
@@ -51,8 +51,8 @@ A **white-label, multi-tenant e-commerce platform** that can be deployed as any 
 - **Tax** — define tax rules by region
 - **Currency** — multi-currency support with exchange rates
 - **Analytics** — sales, revenue, and traffic reports
-- **Settings** — store identity, branding, and configuration
-- **Theme Studio** — live preview dual-surface (store + admin) theme customizer with color presets
+- **Settings** — store identity, branding (General); Organization (business type, legal name, GST/Tax ID, address, regional settings, social links); Notifications; Theme
+- **Theme Studio** — live preview dual-surface (store + admin) theme customizer with color presets; sidebar auto-compacts when Theme tab is open
 
 ### Platform / API
 - **Multi-tenancy** — each organisation gets isolated data via org-scoped queries

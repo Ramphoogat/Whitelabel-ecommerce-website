@@ -19,6 +19,7 @@ function ProductsList() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") ?? "";
   const initialFilter = searchParams.get("filter") ?? "";
+  const initialCategory = searchParams.get("category") ?? "";
   const initialPage = Number(searchParams.get("page") ?? "1");
 
   const { storeTheme } = useStoreTheme();
@@ -39,7 +40,7 @@ function ProductsList() {
   }, [search]);
 
   const query = useQuery({
-    queryKey: ["storefront-products", debouncedSearch, page],
+    queryKey: ["storefront-products", debouncedSearch, initialCategory, page],
     queryFn: () =>
       listStorefrontProducts({ search: debouncedSearch || undefined, page, limit: PAGE_SIZE }),
     retry: 0,
@@ -47,13 +48,17 @@ function ProductsList() {
 
   const usingRealData = query.isSuccess && (query.data?.items.length ?? 0) > 0;
   const products = usingRealData
-    ? query.data!.items.map(mapListProduct)
+    ? query.data!.items.map(mapListProduct).filter((p) =>
+        initialCategory ? p.category.toLowerCase() === initialCategory.toLowerCase() : true,
+      )
     : debouncedSearch
     ? PRODUCTS.filter(
         (p) =>
           p.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
           p.category.toLowerCase().includes(debouncedSearch.toLowerCase()),
       )
+    : initialCategory
+    ? PRODUCTS.filter((p) => p.category.toLowerCase() === initialCategory.toLowerCase())
     : initialFilter === "new"
     ? PRODUCTS.filter((p) => p.new)
     : PRODUCTS;
@@ -68,6 +73,8 @@ function ProductsList() {
 
   const title = debouncedSearch
     ? `Results for "${debouncedSearch}"`
+    : initialCategory
+    ? initialCategory
     : initialFilter === "new"
     ? "New Arrivals"
     : "Shop All";

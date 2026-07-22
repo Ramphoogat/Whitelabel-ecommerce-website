@@ -5,7 +5,7 @@ export type InventoryItemDocument = HydratedDocument<InventoryItem>;
 
 @Schema({ timestamps: true, collection: 'inventory_items' })
 export class InventoryItem extends Document {
-  @Prop({ required: true, unique: true, type: Types.ObjectId, ref: 'ProductVariant' })
+  @Prop({ required: true, type: Types.ObjectId, ref: 'ProductVariant' })
   variantId!: Types.ObjectId;
 
   @Prop({ required: true, default: 0, min: 0 })

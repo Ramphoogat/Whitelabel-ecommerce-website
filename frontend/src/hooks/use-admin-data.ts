@@ -50,10 +50,16 @@ function mapProduct(raw: AdminApiProduct): AdminProduct {
 function mapOrder(raw: AdminApiOrder): AdminOrder {
   const KNOWN: OrderStatus[] = ["pending", "processing", "shipped", "delivered", "cancelled"];
   const status = KNOWN.includes(raw.status as OrderStatus) ? (raw.status as OrderStatus) : "pending";
+  const addr = raw.shippingAddress;
   return {
     _id: raw._id,
     id: raw.orderNumber ?? raw._id,
     customer: raw.contactEmail ?? "Guest",
+    email: raw.contactEmail ?? "—",
+    phone: raw.contactPhone ?? "—",
+    address: addr
+      ? [addr.line1, addr.line2, addr.city, addr.state, addr.postalCode, addr.country].filter(Boolean).join(", ")
+      : "Address not available",
     date: (raw.createdAt ?? "").slice(0, 10),
     items: Array.isArray(raw.items) ? raw.items.length : 0,
     total: formatPrice(raw.totalCents ?? 0),

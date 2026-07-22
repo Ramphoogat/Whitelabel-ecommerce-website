@@ -8,7 +8,7 @@ export class ProductVariant extends Document {
   @Prop({ required: true, type: Types.ObjectId, ref: 'Product', index: true })
   productId!: Types.ObjectId;
 
-  @Prop({ required: true, unique: true, uppercase: true, trim: true })
+  @Prop({ required: true, uppercase: true, trim: true })
   sku!: string;
 
   // Always integer minor units (paise/cents) — never a float rupee/dollar value.

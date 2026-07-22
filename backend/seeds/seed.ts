@@ -7,6 +7,9 @@
  * products, variants, inventory, orders) — never touches staff/customer accounts.
  */
 import 'reflect-metadata';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 import mongoose from 'mongoose';
 import * as argon2 from 'argon2';
 

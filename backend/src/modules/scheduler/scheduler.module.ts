@@ -1,4 +1,4 @@
-import { Module, OnApplicationBootstrap } from '@nestjs/common';
+import { Module, OnApplicationBootstrap, Logger } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BullModule, InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
@@ -25,6 +25,8 @@ import { SchedulerAdminController } from './scheduler-admin.controller';
   exports: [SchedulerService],
 })
 export class SchedulerModule implements OnApplicationBootstrap {
+  private readonly logger = new Logger(SchedulerModule.name);
+
   constructor(
     @InjectQueue(COUPON_EXPIRY_QUEUE) private readonly couponQueue: Queue,
     @InjectQueue(STOCK_RECONCILE_QUEUE) private readonly stockQueue: Queue,
@@ -32,26 +34,30 @@ export class SchedulerModule implements OnApplicationBootstrap {
 
   /** Register repeatable jobs once on startup. BullMQ deduplicates by jobId. */
   async onApplicationBootstrap() {
-    // Coupon expiry: every hour
-    await this.couponQueue.add(
-      'expire-coupons',
-      {},
-      {
-        repeat: { every: 60 * 60 * 1000 },
-        removeOnComplete: 5,
-        jobId: 'coupon-expiry-repeatable',
-      },
-    );
+    try {
+      await this.couponQueue.add(
+        'expire-coupons',
+        {},
+        {
+          repeat: { every: 60 * 60 * 1000 },
+          removeOnComplete: 5,
+          jobId: 'coupon-expiry-repeatable',
+        },
+      );
 
-    // Stock reconciliation: every 6 hours
-    await this.stockQueue.add(
-      'reconcile-stock',
-      {},
-      {
-        repeat: { every: 6 * 60 * 60 * 1000 },
-        removeOnComplete: 5,
-        jobId: 'stock-reconcile-repeatable',
-      },
-    );
+      await this.stockQueue.add(
+        'reconcile-stock',
+        {},
+        {
+          repeat: { every: 6 * 60 * 60 * 1000 },
+          removeOnComplete: 5,
+          jobId: 'stock-reconcile-repeatable',
+        },
+      );
+    } catch (err) {
+      this.logger.warn(
+        `Redis unavailable — scheduled jobs not registered. Start Redis to enable background workers. (${(err as Error).message})`,
+      );
+    }
   }
 }

@@ -179,7 +179,7 @@ function LivePreview({ surface, draft }: { surface: ThemeScope; draft: StoreThem
 
   const openFullPreview = () => {
     const w = window.open(
-      surface === "store" ? "/" : "/admin",
+      surface === "store" ? "/store" : "/admin",
       `theme-preview-${surface}`,
       "popup=yes,width=1280,height=900",
     );
@@ -231,7 +231,7 @@ function LivePreview({ surface, draft }: { surface: ThemeScope; draft: StoreThem
           state survives); hard loads re-fire onLoad, which re-posts it. */}
       <iframe
         ref={frameRef}
-        src={surface === "store" ? "/" : "/admin"}
+        src={surface === "store" ? "/store" : "/admin"}
         title={surface === "store" ? "Storefront preview" : "Admin panel preview"}
         onLoad={() => {
           setLoaded(true);

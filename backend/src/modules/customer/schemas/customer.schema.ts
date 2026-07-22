@@ -7,7 +7,7 @@ export type CustomerDocument = HydratedDocument<Customer>;
 
 @Schema({ timestamps: true, collection: 'customers' })
 export class Customer extends Document {
-  @Prop({ required: true, unique: true, lowercase: true, trim: true })
+  @Prop({ required: true, lowercase: true, trim: true })
   email!: string;
 
   // Null when the customer has only ever authenticated via OTP.

@@ -4,22 +4,25 @@ import Link from "next/link";
 import { useCartStore, cartCount } from "@/stores/cart-store";
 import { useAuthStore } from "@/stores/auth-store";
 import { useStoreTheme } from "@/components/theme/theme-provider";
+import { useStoreSettings } from "@/stores/store-settings-store";
 
 const NAV = [
   { label: "New", href: "/products?filter=new" },
   { label: "Shop All", href: "/products" },
-  { label: "Journal", href: "/journal" },
+  { label: "Blog", href: "/blog" },
 ];
 
 function Wordmark() {
   const { storeTheme } = useStoreTheme();
+  const { settings } = useStoreSettings();
+  const logoSrc = settings.logoUrl || storeTheme.logoUrl;
   return (
-    <Link href="/" className="flex items-center gap-2.5 font-display text-xl italic tracking-tight text-ink">
-      {storeTheme.logoUrl && (
+    <Link href="/store" className="flex items-center gap-2.5 font-display text-xl italic tracking-tight text-ink">
+      {logoSrc && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={storeTheme.logoUrl} alt="" className="size-7 rounded-full object-cover" />
+        <img src={logoSrc} alt="" className="size-7 rounded-full object-cover" />
       )}
-      Aldergate &amp; Co.
+      {settings.storeName}
     </Link>
   );
 }

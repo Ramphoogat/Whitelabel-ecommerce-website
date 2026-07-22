@@ -7,7 +7,7 @@ export type NotificationChannelConfigDocument = HydratedDocument<NotificationCha
 
 @Schema({ timestamps: true, collection: 'notification_channel_configs' })
 export class NotificationChannelConfig extends Document {
-  @Prop({ required: true, enum: ['email', 'sms'], unique: true })
+  @Prop({ required: true, enum: ['email', 'sms'] })
   channel!: NotificationChannel;
 
   @Prop({ required: true })

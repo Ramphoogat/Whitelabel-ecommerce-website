@@ -35,7 +35,7 @@ export function RevenueChart() {
   const total = data.reduce((n, d) => n + d.value, 0);
 
   return (
-    <section className="glass rounded-[var(--radius-lg)] p-6">
+    <section className="rounded-[var(--radius-lg)] p-6" style={{ background: "var(--surface)", border: "1px solid var(--surface)", boxShadow: "0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05)" }}>
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="font-display text-lg font-medium text-ink">Revenue</h2>
@@ -74,7 +74,7 @@ export function RevenueChart() {
                 background: "linear-gradient(to top, var(--accent), color-mix(in srgb, var(--accent) 55%, var(--surface)))",
               }}
             >
-              <span className="pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-0.5 font-mono text-[10px] text-bone opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="pointer-events-none absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-surface-raised px-2 py-0.5 font-mono text-[10px] text-ink opacity-0 transition-opacity group-hover:opacity-100">
                 {formatPrice(d.value)}
               </span>
             </div>

@@ -8,7 +8,7 @@ export class Category extends Document {
   @Prop({ required: true })
   name!: string;
 
-  @Prop({ required: true, unique: true, lowercase: true, trim: true })
+  @Prop({ required: true, lowercase: true, trim: true })
   slug!: string;
 
   @Prop({ default: '' })

@@ -33,7 +33,7 @@ export function GatewayToggleList() {
     <div className="overflow-hidden rounded-[var(--radius-lg)] border border-line/70 bg-surface">
       <table className="w-full text-left text-[13px]">
         <thead>
-          <tr className="border-b border-line/70 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-soft">
+          <tr className="border-b border-line/70 bg-bone font-mono text-[10px] uppercase tracking-[0.1em] text-ink-soft">
             <th className="px-5 py-3 font-normal">Provider</th>
             <th className="px-5 py-3 font-normal">Supported Modes</th>
             <th className="px-5 py-3 font-normal">Priority</th>
@@ -52,7 +52,7 @@ export function GatewayToggleList() {
                     {(g.supportedModes ?? []).map((m) => (
                       <span
                         key={m}
-                        className="rounded-full bg-line-soft px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.06em] text-ink-soft"
+                        className="rounded-full bg-bone px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.06em] text-ink-soft"
                       >
                         {m}
                       </span>
@@ -69,10 +69,10 @@ export function GatewayToggleList() {
                     disabled={toggleMutation.isPending}
                     onClick={() => toggleMutation.mutate({ id: g._id, isActive: !g.isActive })}
                     className="relative h-5 w-9 rounded-full transition-colors disabled:opacity-60"
-                    style={{ background: g.isActive ? "var(--success)" : "var(--line)" }}
+                    style={{ background: g.isActive ? "var(--success)" : "var(--bone)" }}
                   >
                     <span
-                      className="absolute top-0.5 size-4 rounded-full bg-white transition-all"
+                      className="absolute top-0.5 size-4 rounded-full bg-ink transition-all"
                       style={{ left: g.isActive ? "18px" : "2px" }}
                     />
                   </button>
@@ -93,11 +93,6 @@ function MockGatewayToggleList() {
   }
   return (
     <div className="overflow-hidden rounded-[var(--radius-lg)] border border-line/70 bg-surface">
-      <div className="flex items-center gap-2 border-b border-line/70 px-5 py-2">
-        <span className="rounded-full bg-line-soft px-2.5 py-1 font-mono text-[10px] text-ink-soft">
-          Demo data
-        </span>
-      </div>
       <table className="w-full text-left text-[13px]">
         <thead>
           <tr className="border-b border-line/70 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-soft">
@@ -114,7 +109,7 @@ function MockGatewayToggleList() {
               <td className="px-5 py-3">
                 <div className="flex flex-wrap gap-1.5">
                   {g.supportedModes.map((m) => (
-                    <span key={m} className="rounded-full bg-line-soft px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.06em] text-ink-soft">
+                    <span key={m} className="rounded-full bg-bone px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.06em] text-ink-soft">
                       {m}
                     </span>
                   ))}
@@ -128,9 +123,9 @@ function MockGatewayToggleList() {
                   aria-checked={g.isActive}
                   onClick={() => toggle(g.provider)}
                   className="relative h-5 w-9 rounded-full transition-colors"
-                  style={{ background: g.isActive ? "var(--success)" : "var(--line)" }}
+                  style={{ background: g.isActive ? "var(--success)" : "var(--bone)" }}
                 >
-                  <span className="absolute top-0.5 size-4 rounded-full bg-white transition-all" style={{ left: g.isActive ? "18px" : "2px" }} />
+                  <span className="absolute top-0.5 size-4 rounded-full bg-ink transition-all" style={{ left: g.isActive ? "18px" : "2px" }} />
                 </button>
               </td>
             </tr>

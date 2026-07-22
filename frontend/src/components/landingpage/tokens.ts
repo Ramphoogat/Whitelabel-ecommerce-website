@@ -1,0 +1,10 @@
+export const GOLD        = "#c8a96e";
+export const GOLD_SOFT   = "rgba(200,169,110,0.12)";
+export const GOLD_BORDER = "rgba(200,169,110,0.2)";
+export const BG          = "#080810";
+export const SURFACE     = "#0e0e18";
+export const SURFACE2    = "#15151f";
+export const LINE        = "#28283a";
+export const INK         = "#f6f4ee";
+export const INK2        = "#a9a6a4";
+export const INK3        = "#78767c";

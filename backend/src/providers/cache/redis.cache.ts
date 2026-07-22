@@ -7,34 +7,63 @@ import { CacheProvider } from './cache.interface';
 export class RedisStandaloneCache implements CacheProvider, OnModuleDestroy {
   private readonly logger = new Logger(RedisStandaloneCache.name);
   private readonly client: Redis;
+  private available = false;
 
   constructor(private readonly config: ConfigService) {
     this.client = new Redis({
       host: this.config.get<string>('redis.host'),
       port: this.config.get<number>('redis.port'),
       password: this.config.get<string>('redis.password') || undefined,
-      lazyConnect: false,
+      lazyConnect: true,
+      enableOfflineQueue: false,
+      maxRetriesPerRequest: 1,
+      retryStrategy: (times) => {
+        // Back off: 1s, 2s, 4s … max 30s. Never throws — just retries silently.
+        return Math.min(times * 1000, 30_000);
+      },
     });
 
-    this.client.on('error', (err) => this.logger.error(`Redis error: ${err.message}`));
-    this.client.on('connect', () => this.logger.log('Redis (standalone) connected'));
+    this.client.on('error', (err) => {
+      if (this.available) this.logger.warn(`Redis unavailable: ${err.message}`);
+      this.available = false;
+    });
+    this.client.on('connect', () => {
+      this.available = true;
+      this.logger.log('Redis (standalone) connected');
+    });
+
+    // Attempt initial connection in the background — failure is non-fatal.
+    this.client.connect().catch(() => {
+      this.logger.warn('Redis not reachable on startup — cache disabled, app continues without it');
+    });
   }
 
   async get<T = string>(key: string): Promise<T | null> {
-    const value = await this.client.get(key);
-    return value as unknown as T | null;
-  }
-
-  async set(key: string, value: string, ttlSeconds?: number): Promise<void> {
-    if (ttlSeconds) {
-      await this.client.set(key, value, 'EX', ttlSeconds);
-    } else {
-      await this.client.set(key, value);
+    if (!this.available) return null;
+    try {
+      const value = await this.client.get(key);
+      return value as unknown as T | null;
+    } catch {
+      return null;
     }
   }
 
+  async set(key: string, value: string, ttlSeconds?: number): Promise<void> {
+    if (!this.available) return;
+    try {
+      if (ttlSeconds) {
+        await this.client.set(key, value, 'EX', ttlSeconds);
+      } else {
+        await this.client.set(key, value);
+      }
+    } catch { /* swallow — cache is best-effort */ }
+  }
+
   async del(key: string): Promise<void> {
-    await this.client.del(key);
+    if (!this.available) return;
+    try {
+      await this.client.del(key);
+    } catch { /* swallow */ }
   }
 
   async isHealthy(): Promise<boolean> {
@@ -47,6 +76,6 @@ export class RedisStandaloneCache implements CacheProvider, OnModuleDestroy {
   }
 
   async onModuleDestroy(): Promise<void> {
-    await this.client.quit();
+    try { await this.client.quit(); } catch { /* ignore */ }
   }
 }

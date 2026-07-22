@@ -8,7 +8,7 @@ export type PaymentGatewayConfigDocument = HydratedDocument<PaymentGatewayConfig
 
 @Schema({ timestamps: true, collection: 'payment_gateway_configs' })
 export class PaymentGatewayConfig extends Document {
-  @Prop({ required: true, enum: SUPPORTED_GATEWAYS, unique: true })
+  @Prop({ required: true, enum: SUPPORTED_GATEWAYS })
   provider!: string;
 
   @Prop({ default: false })

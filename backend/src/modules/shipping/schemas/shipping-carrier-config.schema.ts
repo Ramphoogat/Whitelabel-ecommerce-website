@@ -6,7 +6,7 @@ export type ShippingCarrierConfigDocument = HydratedDocument<ShippingCarrierConf
 
 @Schema({ timestamps: true, collection: 'shipping_carrier_configs' })
 export class ShippingCarrierConfig extends Document {
-  @Prop({ required: true, enum: SUPPORTED_CARRIERS, unique: true })
+  @Prop({ required: true, enum: SUPPORTED_CARRIERS })
   carrier!: string;
 
   @Prop({ default: false })

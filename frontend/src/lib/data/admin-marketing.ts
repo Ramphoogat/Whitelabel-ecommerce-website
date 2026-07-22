@@ -20,6 +20,8 @@ export interface Banner {
   placement: string;
   tone: string;
   active: boolean;
+  tags?: string[];
+  imageUrl?: string;
 }
 
 export const BANNERS: Banner[] = [

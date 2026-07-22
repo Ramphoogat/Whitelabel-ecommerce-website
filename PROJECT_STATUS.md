@@ -1,6 +1,6 @@
 # White-Label E-Commerce Platform — Project Status
 
-> Last updated: 2026-07-20  
+> Last updated: 2026-07-22  
 > Stack: NestJS (backend) · Next.js 16 App Router + TypeScript + Tailwind (frontend)  
 > Arch: one codebase, isolated per-client deployment — all differences via ENV + `organization.settings` in MongoDB.
 
@@ -262,6 +262,41 @@ docker compose -f docker-compose.test.yml down -v
 - **Analytics page** — stat tiles + **Revenue chart** with Daily/Weekly/Monthly/Yearly range switcher. Verified in browser.
 - **Settings page** — General (store name/domain), Organization, Notifications.
 
+#### Marketing Landing Page — full build *(new)*
+- **Shoplux landing page** (`/`) — completely separate from the merchant storefront; lives in `(landingpage)` route group
+- **Hero** — animated word-by-word headline (GSAP), dual-column layout with Three.js canvas, floating store-stats card overlay
+- **Logo bar** — infinite marquee of brand names
+- **How It Works** — 3-step card grid with GSAP ScrollTrigger fade-in
+- **Features** — 6-cell grid (Theme Studio, Commerce Stack, Analytics, Marketing Suite, Payments, Infrastructure)
+- **Storefront preview carousel** — auto-horizontal-scroll (RAF-driven, 6 cards doubled for seamless loop, pauses on hover, fade edges)
+- **Testimonial** — auto-cycling quote rotator with dot navigation
+- **Pricing** — 2-tier cards (Starter free / Growth $49) with CTA links
+- **Final CTA** — GSAP scale-in headline
+- **Footer** — brand link, doc/terms links, copyright
+
+#### Marketing Sub-pages *(new)*
+- **`/platform`** — 6 pillar cards (Commerce Engine, Theme Studio, Marketing Suite, Analytics, Payments, Infrastructure), full feature lists per pillar, bottom CTA strip linking to `/pricing`
+- **`/pricing`** — 3-tier plan grid (Starter / Growth / Enterprise), monthly/annual billing toggle (saves 20%), accordion FAQ (5 questions), badge on featured plan
+- **`/themes`** — 6 theme preview cards (Dusk, Ivory, Indigo, Sage, Ember, Slate), each renders a live browser-chrome mockup in that theme's actual colours (nav, hero, product row), colour swatch dots, category badge; Theme Studio callout section at bottom
+- **`/docs`** — 6 documentation sections (Getting Started, Theme Studio, Products & Catalog, Payments & Orders, Marketing, Analytics), live search filter across all article titles, read-time estimates per article
+
+#### Shared Marketing Components *(new)*
+- **`MarketingNav`** (`components/marketing/marketing-nav.tsx`) — shared nav used by all marketing pages; "Shoplux" brand is a `<Link href="/">` (not a plain span); nav links point to `/platform`, `/pricing`, `/themes`, `/docs`; `solid` prop for sub-pages (no scroll trigger needed); scroll-triggered blur/border effect on homepage
+- **`tokens.ts`** (`components/marketing/tokens.ts`) — shared colour constants (`GOLD`, `GOLD_SOFT`, `GOLD_BORDER`, `BG`, `SURFACE`, `SURFACE2`, `LINE`, `INK`, `INK2`, `INK3`) used across all marketing pages and components
+
+#### Separation of landing page vs storefront *(fixed)*
+- Marketing `(marketing)` route group and merchant `(store)` route group are now fully isolated — no links cross between them
+- Storefront header logo (`Wordmark`) links to `/products` (storefront), not `/`
+- Storefront error page "Go home" links to `/products`
+- Theme Studio live preview iframe points to `/products` (storefront), not `/` (landing page)
+
+#### Bug fixes *(this session)*
+- **Stat tile border in light mode** — `var(--line-soft)` (near-black, never overridden in `AdminThemeScope`) replaced with `var(--line)` which is correctly overridden to `#e4e0d4` in light mode
+- **Admin modal dark background in light mode** — `.glass` (unlayered CSS, higher cascade priority) was overriding `bg-surface` (Tailwind `@layer utilities`); fixed by removing the `glass` class from the modal card
+- **Three.js `bufferAttribute` error** — `array/count/itemSize` props deprecated in R3F; replaced with `args={[positions, 3]}` constructor-args pattern
+- **React list key warning in OrdersTable** — Fragment wrapping `<tr>` + expanded panel lacked a key; replaced `<>` with `<Fragment key={o._id}>` so the key lives at the correct level
+- **Category filter buttons on store page** — `/products?category=X` URL param was never read; added `initialCategory` from `useSearchParams()` and wired it into demo + real-data filtering and page title
+
 #### Theme Studio *(new — full session)*
 - **Independent dual-surface themes** — storefront and admin panel each have their own saved theme (`organization.settings.theme` / `organization.settings.adminTheme`). Saved separately, applied separately; switching scope in the studio never touches the other draft.
 - **Full palette control** — 10 named colour tokens (accent, accentInk, accentSoft, secondary, secondarySoft, background, surface, ink, inkSoft, line) each with a native colour-picker + hex input; changes propagate live via CSS custom properties.
@@ -276,6 +311,16 @@ docker compose -f docker-compose.test.yml down -v
 - **"Open in new window" popup** — `window.open()` + burst-post loop (400 ms interval, 15 s) catches the async React mount and pushes the draft immediately; subsequent changes flow continuously. Guards against embedded-browser environments where `window.open` returns the current window.
 - **Save / Discard / Restore** — Save: PATCH to backend + clears dirty flag. Discard: resets to last saved. Restore defaults: reverts to `DEFAULT_STORE_THEME`.
 - **Preset-safe layout knobs** — `applyPreset()` merges only palette/type/corner/surface fields, leaving header/hero/grid/sidebar choices untouched.
+
+#### Admin UX improvements *(new — this session)*
+- **Sidebar brand name locked** — sidebar header always shows "Shoplux" (hardcoded brand, not the user-editable store name)
+- **Sidebar auto-compact on Theme settings** — when `sidebarStyle` is "expanded" and the user navigates to `/admin/settings`, the sidebar automatically downgrades to "compact" so the theme customizer has more horizontal room
+- **Viewport-locked admin layout** — layout is now `h-screen overflow-hidden`; only the right content column scrolls (`overflow-y-auto`); sidebar never scrolls
+- **Sticky topbar** — `AdminTopbar` header is `sticky top-0 z-10` so it pins inside the scrolling column — sidebar and topbar both stay fixed while page content scrolls underneath
+- **Go to Store button** — sidebar bottom shows "↗ Go to Store" (expanded/compact) or "↗" with tooltip (rail); opens `/store` in a new tab
+- **Orders table inline expansion** — clicking any order row expands an inline panel showing: customer card (name, email, phone, delivery address) + a visual step-by-step order progress tracker (Order Placed → Awaiting Payment → Processing → Shipped → Delivered); cancelled orders show a red badge; chevron rotates to indicate open/closed; `RECENT_ORDERS` demo data extended with `email`, `phone`, and `address` fields; `AdminApiOrder` type extended with `contactPhone` and full `shippingAddress` fields; `mapOrder()` maps all new fields
+- **Organization settings expanded** — Settings → Organization now covers: Business identity (type, legal name, GST/Tax ID, tagline), Contact (email, phone, website), Business address (street, city, state, ZIP, country), Regional (currency, language, timezone), Social links (Instagram, Twitter/X, Facebook, TikTok); all fields persisted to `useStoreSettings` Zustand store (localStorage); `store-settings-store.ts` extended with `legalName`, `taxId`, `website`, `socialTiktok`; `AdminOrganizationSettings` API type and `updateOrganizationSettings()` function added for future backend wiring
+- **Marketing sub-pages image upload** — New Banner modal now has drag-and-drop image upload zone + file picker + local `data:` preview + URL fallback input
 
 #### Admin sidebar variants *(new)*
 - Three layouts driven by `sidebarStyle` token: **Expanded** (full labels + icon), **Compact** (tighter), **Rail** (icon-only, 2-letter monogram + hover tooltip).

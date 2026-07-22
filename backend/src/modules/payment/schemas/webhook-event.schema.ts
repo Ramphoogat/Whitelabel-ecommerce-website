@@ -8,7 +8,7 @@ export class WebhookEvent extends Document {
   @Prop({ required: true })
   provider!: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   providerEventId!: string;
 
   @Prop({ type: Object, required: true })

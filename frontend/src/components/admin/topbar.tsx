@@ -20,7 +20,7 @@ function ProfileAvatar({ name, avatarUrl }: { name: string; avatarUrl?: string }
     );
   }
   return (
-    <div className="size-8 rounded-full bg-ink font-mono text-[11px] leading-8 text-center text-bone">
+    <div className="size-8 rounded-full bg-surface font-mono text-[11px] leading-8 text-center text-ink-soft">
       {initials}
     </div>
   );
@@ -46,22 +46,12 @@ function ProfileDropdown({ onEditProfile, onClose }: { onEditProfile: () => void
       ),
       action: () => { onClose(); onEditProfile(); },
     },
-    {
-      label: "Change password",
-      icon: (
-        <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-          <rect x="2" y="6" width="9" height="6" rx="1.5" />
-          <path d="M4.5 6V4a2 2 0 014 0v2" />
-        </svg>
-      ),
-      action: () => { onClose(); onEditProfile(); },
-    },
   ];
 
   return (
     <div
-      className="glass absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-[var(--radius-md)] bg-surface py-1"
-      style={{ boxShadow: "0 8px 32px rgba(28,24,18,0.16)" }}
+      className="absolute right-0 top-full z-50 mt-2 w-52 overflow-hidden rounded-[var(--radius-md)] py-1"
+      style={{ background: "var(--bone)", border: "1px solid var(--line)", boxShadow: "0 8px 32px rgba(152, 149, 143, 0.53)" }}
     >
       {/* User info header */}
       <div className="border-b border-line/60 px-4 py-3">
@@ -76,7 +66,7 @@ function ProfileDropdown({ onEditProfile, onClose }: { onEditProfile: () => void
             key={item.label}
             type="button"
             onClick={item.action}
-            className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-ink transition-colors hover:bg-bone"
+            className="flex w-full items-center gap-3 px-4 py-2.5 text-[13px] text-ink transition-colors hover:bg-bone/60"
           >
             <span className="text-ink-soft">{item.icon}</span>
             {item.label}
@@ -121,12 +111,12 @@ export function AdminTopbar({ title }: { title: string }) {
 
   return (
     <>
-      <header className="flex h-16 items-center justify-between border-b border-line/70 px-6">
+      <header className="sticky top-0 z-10 flex h-16 items-center justify-between border-b border-line/70 bg-bone px-6">
         <h1 className="font-display text-xl italic text-ink">{title}</h1>
 
         <div className="flex items-center gap-3">
-          <span className="hidden font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft sm:inline">
-            {user?.name?.split(" ")[0] ?? "Admin"}
+          <span className="hidden font-mono text-[11px] uppercase tracking-[0.1em] text-ink sm:inline">
+            {user?.name ?? "Admin"}
           </span>
 
           <div ref={dropdownRef} className="relative">
@@ -141,7 +131,7 @@ export function AdminTopbar({ title }: { title: string }) {
                 <ProfileAvatar name={user.name} avatarUrl={user.avatarUrl} />
               )}
               {/* Small chevron badge */}
-              <span className="absolute -bottom-0.5 -right-0.5 flex size-3.5 items-center justify-center rounded-full bg-bone ring-1 ring-line">
+              <span className="absolute -bottom-0.5 -right-0.5 flex size-3.5 items-center justify-center rounded-full bg-surface ring-1 ring-line">
                 <svg width="6" height="6" viewBox="0 0 6 6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-ink-soft">
                   <path d="M1 2l2 2 2-2" />
                 </svg>

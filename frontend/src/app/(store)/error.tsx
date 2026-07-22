@@ -26,7 +26,7 @@ export default function StoreError({
           Try again
         </button>
         <Link
-          href="/"
+          href="/products"
           className="rounded-full border border-line px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink hover:border-ink"
         >
           Go home

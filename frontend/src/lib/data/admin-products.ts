@@ -20,6 +20,6 @@ export const ADMIN_PRODUCTS: AdminProduct[] = [
 
 export const STATUS_BADGE: Record<AdminProduct["status"], string> = {
   active: "bg-success/10 text-success",
-  draft: "bg-line-soft text-ink-soft",
+  draft: "bg-bone text-ink-soft",
   archived: "bg-danger/10 text-danger",
 };

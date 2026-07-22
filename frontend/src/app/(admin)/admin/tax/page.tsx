@@ -114,7 +114,7 @@ export default function AdminTaxPage() {
         <div className="overflow-hidden rounded-[var(--radius-lg)] border border-line/70 bg-surface">
           <table className="w-full text-left text-[13px]">
             <thead>
-              <tr className="border-b border-line/70 font-mono text-[10px] uppercase tracking-[0.1em] text-ink-soft">
+              <tr className="border-b border-line/70 bg-bone font-mono text-[10px] uppercase tracking-[0.1em] text-ink-soft">
                 <th className="px-5 py-3 font-normal">Name</th>
                 <th className="px-5 py-3 font-normal">Type</th>
                 <th className="px-5 py-3 font-normal">Rate</th>
@@ -138,7 +138,7 @@ export default function AdminTaxPage() {
                   </td>
                   <td className="px-5 py-3 font-mono text-ink-soft">{r.priority}</td>
                   <td className="px-5 py-3">
-                    <span className={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em] ${r.isActive ? "bg-success/10 text-success" : "bg-line-soft text-ink-soft"}`}>
+                    <span className={`rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.08em] ${r.isActive ? "bg-success/10 text-success" : "bg-bone text-ink-soft"}`}>
                       {r.isActive ? "Yes" : "No"}
                     </span>
                   </td>

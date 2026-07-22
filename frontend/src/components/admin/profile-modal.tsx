@@ -302,7 +302,7 @@ function PreferencesTab() {
             className={`relative h-5 w-9 flex-shrink-0 overflow-hidden rounded-full transition-colors duration-200 ${value ? "bg-accent" : "bg-line"}`}
           >
             <span
-              className={`absolute top-[1.5px] left-[1.5px] size-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${value ? "translate-x-[18px]" : "translate-x-0"}`}
+              className={`absolute top-[1.5px] left-[1.5px] size-4 rounded-full bg-ink shadow-sm transition-transform duration-200 ${value ? "translate-x-[18px]" : "translate-x-0"}`}
             />
           </button>
         </div>
@@ -333,8 +333,8 @@ export function ProfileModal({ open, onClose }: { open: boolean; onClose: () => 
       />
 
       <div
-        className="glass animate-rise relative w-full max-w-lg overflow-hidden rounded-[var(--radius-lg)] bg-surface"
-        style={{ boxShadow: "0 12px 60px rgba(28,24,18,0.22)" }}
+        className="animate-rise relative w-full max-w-lg overflow-hidden rounded-[var(--radius-lg)]"
+        style={{ background: "var(--bone)", boxShadow: "0 12px 60px rgba(0,0,0,0.28)", border: "1px solid var(--line-soft)" }}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-line/60 px-6 py-5">
@@ -348,7 +348,7 @@ export function ProfileModal({ open, onClose }: { open: boolean; onClose: () => 
           <button
             onClick={onClose}
             aria-label="Close"
-            className="flex size-7 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-bone hover:text-ink"
+            className="flex size-7 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-bone/60 hover:text-ink"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
               <path d="M1 1l12 12M13 1L1 13" />

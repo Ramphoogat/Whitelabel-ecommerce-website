@@ -7,7 +7,7 @@ export type CouponDocument = HydratedDocument<Coupon>;
 
 @Schema({ timestamps: true, collection: 'coupons' })
 export class Coupon extends Document {
-  @Prop({ required: true, unique: true, uppercase: true, trim: true })
+  @Prop({ required: true, uppercase: true, trim: true })
   code!: string;
 
   @Prop({ required: true, enum: ['percentage', 'fixed'] })

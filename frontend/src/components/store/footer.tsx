@@ -21,7 +21,7 @@ const COLUMNS = [
     heading: "Studio",
     links: [
       { label: "About", href: "/pages/about" },
-      { label: "Journal", href: "/journal" },
+      { label: "Blog", href: "/blog" },
     ],
   },
 ];
