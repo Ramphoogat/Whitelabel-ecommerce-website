@@ -9,6 +9,7 @@ export interface StaffUser {
   avatarUrl?: string;
   bio?: string;
   phone?: string;
+  allowedSections: string[] | null;
 }
 
 interface StaffState {

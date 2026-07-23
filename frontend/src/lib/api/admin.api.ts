@@ -43,6 +43,35 @@ export function loginStaff(input: { email: string; password: string }) {
   return staffRequest<StaffAuthResponse>("/auth/login", { method: "POST", body: input });
 }
 
+// ----- Staff administration -----
+
+export interface AdminApiStaffUser {
+  _id: string;
+  email: string;
+  name: string;
+  role: "owner" | "admin" | "staff";
+  isActive: boolean;
+  lastLoginAt: string | null;
+  createdAt?: string;
+  allowedSections: string[] | null;
+}
+
+export function listStaff() {
+  return staffRequest<AdminApiStaffUser[]>("/admin/staff");
+}
+
+export function createStaff(input: { name: string; email: string; password: string; role: "staff" | "admin" }) {
+  return staffRequest<AdminApiStaffUser>("/admin/staff", { method: "POST", body: input });
+}
+
+export function updateStaff(id: string, input: { role?: "staff" | "admin"; isActive?: boolean; allowedSections?: string[] | null }) {
+  return staffRequest<AdminApiStaffUser>(`/admin/staff/${id}`, { method: "PATCH", body: input });
+}
+
+export function removeStaff(id: string) {
+  return staffRequest<{ ok: true }>(`/admin/staff/${id}`, { method: "DELETE" });
+}
+
 // ----- Catalog -----
 
 export interface AdminApiVariant {

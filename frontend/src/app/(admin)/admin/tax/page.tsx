@@ -6,6 +6,7 @@ import { AdminTopbar } from "@/components/admin/topbar";
 import { useAdminTaxRates } from "@/hooks/use-admin-data";
 import { createTaxRate, updateTaxRate, deleteTaxRate, type AdminApiTaxRate } from "@/lib/api/admin.api";
 import { SkeletonTable } from "@/components/ui/skeleton";
+import { Pagination, usePagination } from "@/components/admin/pagination";
 import { toast } from "@/stores/toast-store";
 
 type FormState = Omit<AdminApiTaxRate, "_id" | "isActive">;
@@ -29,6 +30,8 @@ export default function AdminTaxPage() {
     setAdding(false);
   }
   function closePanel() { setAdding(false); setEditing(null); }
+
+  const { pageItems, page, pageCount, setPage, total, pageSize } = usePagination(rates ?? []);
 
   const createMut = useMutation({
     mutationFn: () => createTaxRate(form),
@@ -126,7 +129,7 @@ export default function AdminTaxPage() {
             </thead>
             <tbody>
               {isLoading && <SkeletonTable rows={3} cols={7} />}
-              {!isLoading && (rates ?? []).map(r => (
+              {!isLoading && pageItems.map(r => (
                 <tr key={r._id} className="border-b border-line/50 last:border-0 hover:bg-bone/60">
                   <td className="px-5 py-3 text-ink">{r.name}</td>
                   <td className="px-5 py-3 font-mono text-ink-soft">{r.type}</td>
@@ -160,6 +163,7 @@ export default function AdminTaxPage() {
               )}
             </tbody>
           </table>
+          <Pagination page={page} pageCount={pageCount} total={total} pageSize={pageSize} onPage={setPage} label="rates" />
         </div>
       </div>
     </>

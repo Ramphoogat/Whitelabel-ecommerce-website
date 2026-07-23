@@ -1,6 +1,8 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -13,6 +15,8 @@ import { User, UserDocument } from './schemas/user.schema';
 import { RefreshToken, RefreshTokenDocument } from './schemas/refresh-token.schema';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { CreateStaffDto } from './dto/create-staff.dto';
+import { UpdateStaffDto } from './dto/update-staff.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { JwtStaffPayload } from '../../shared/interfaces/jwt-payload.interface';
 
@@ -118,6 +122,62 @@ export class IdentityService {
     }
   }
 
+  // ----- Staff administration (admin/staff) -----
+
+  async listStaff() {
+    return this.userModel.find().select('-passwordHash').sort({ createdAt: 1 });
+  }
+
+  async createStaff(dto: CreateStaffDto): Promise<Record<string, unknown>> {
+    const existing = await this.userModel.findOne({ email: dto.email });
+    if (existing) {
+      throw new ConflictException('An account with this email already exists');
+    }
+
+    const passwordHash = await argon2.hash(dto.password, { type: argon2.argon2id });
+    const user = await this.userModel.create({
+      email: dto.email,
+      passwordHash,
+      name: dto.name,
+      role: dto.role,
+    });
+
+    const { passwordHash: _, ...safe } = user.toObject();
+    return safe;
+  }
+
+  async removeStaff(id: string, actor: JwtStaffPayload): Promise<{ ok: true }> {
+    const user = await this.userModel.findById(id);
+    if (!user) throw new NotFoundException('Staff user not found');
+    if (user.role === 'owner') {
+      throw new ForbiddenException("The owner account can't be removed");
+    }
+    if (actor.sub === id) {
+      throw new ForbiddenException("You can't remove your own account");
+    }
+    await this.userModel.deleteOne({ _id: id });
+    return { ok: true };
+  }
+
+  async updateStaff(id: string, dto: UpdateStaffDto, actor: JwtStaffPayload): Promise<Record<string, unknown>> {
+    const user = await this.userModel.findById(id);
+    if (!user) throw new NotFoundException('Staff user not found');
+    if (user.role === 'owner') {
+      throw new ForbiddenException("The owner's account can't be modified");
+    }
+    if (actor.sub === id && dto.isActive === false) {
+      throw new ForbiddenException("You can't deactivate your own account");
+    }
+
+    if (dto.role !== undefined) user.role = dto.role;
+    if (dto.isActive !== undefined) user.isActive = dto.isActive;
+    if (dto.allowedSections !== undefined) user.allowedSections = dto.allowedSections ?? null;
+    await user.save();
+
+    const { passwordHash: _, ...safe } = user.toObject();
+    return safe;
+  }
+
   private async issueTokenPair(
     user: UserDocument,
     family: string,
@@ -126,6 +186,7 @@ export class IdentityService {
       sub: (user._id as Types.ObjectId).toString(),
       email: user.email,
       role: user.role,
+      allowedSections: user.allowedSections ?? null,
     };
 
     const accessToken = await this.jwtService.signAsync(payload, {
@@ -152,6 +213,7 @@ export class IdentityService {
         email: user.email,
         name: user.name,
         role: user.role,
+        allowedSections: user.allowedSections ?? null,
       },
     };
   }

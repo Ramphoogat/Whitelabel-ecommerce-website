@@ -7,6 +7,7 @@ import { updatePaymentGateway } from "@/lib/api/admin.api";
 import { toast } from "@/stores/toast-store";
 import { GATEWAY_CONFIGS } from "@/lib/data/admin-payments";
 import { SkeletonTable } from "@/components/ui/skeleton";
+import { Pagination, usePagination } from "./pagination";
 
 export function GatewayToggleList() {
   const qc = useQueryClient();
@@ -22,12 +23,12 @@ export function GatewayToggleList() {
     onError: (err: Error) => toast.error(err.message),
   });
 
+  const pager = usePagination(isSuccess ? apiGateways! : []);
+
   // Fall back to mock data (with local toggle) when API is unreachable
   if (!isSuccess && !isLoading) {
     return <MockGatewayToggleList />;
   }
-
-  const gateways = isSuccess ? apiGateways! : [];
 
   return (
     <div className="overflow-hidden rounded-[var(--radius-lg)] border border-line/70 bg-surface">
@@ -44,7 +45,7 @@ export function GatewayToggleList() {
           {isLoading ? (
             <SkeletonTable rows={3} cols={4} />
           ) : (
-            gateways.map((g) => (
+            pager.pageItems.map((g) => (
               <tr key={g._id} className="border-b border-line/50 last:border-0 hover:bg-bone/60">
                 <td className="px-5 py-3 text-ink">{g.provider}</td>
                 <td className="px-5 py-3">
@@ -82,12 +83,21 @@ export function GatewayToggleList() {
           )}
         </tbody>
       </table>
+      <Pagination
+        page={pager.page}
+        pageCount={pager.pageCount}
+        total={pager.total}
+        pageSize={pager.pageSize}
+        onPage={pager.setPage}
+        label="gateways"
+      />
     </div>
   );
 }
 
 function MockGatewayToggleList() {
   const [gateways, setGateways] = useState(GATEWAY_CONFIGS);
+  const pager = usePagination(gateways);
   function toggle(provider: string) {
     setGateways((gs) => gs.map((g) => (g.provider === provider ? { ...g, isActive: !g.isActive } : g)));
   }
@@ -103,7 +113,7 @@ function MockGatewayToggleList() {
           </tr>
         </thead>
         <tbody>
-          {gateways.map((g) => (
+          {pager.pageItems.map((g) => (
             <tr key={g.provider} className="border-b border-line/50 last:border-0 hover:bg-bone/60">
               <td className="px-5 py-3 text-ink">{g.label}</td>
               <td className="px-5 py-3">
@@ -132,6 +142,14 @@ function MockGatewayToggleList() {
           ))}
         </tbody>
       </table>
+      <Pagination
+        page={pager.page}
+        pageCount={pager.pageCount}
+        total={pager.total}
+        pageSize={pager.pageSize}
+        onPage={pager.setPage}
+        label="gateways"
+      />
     </div>
   );
 }

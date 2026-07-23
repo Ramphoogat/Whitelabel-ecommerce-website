@@ -5,6 +5,7 @@ import { CMS_PAGES, BLOG_POSTS, type CmsPage, type BlogPost } from "@/lib/data/a
 import { createCmsPage, createBlogPost } from "@/lib/api/admin.api";
 import { Modal } from "./modal";
 import { RichEditor } from "./rich-editor";
+import { Pagination, usePagination } from "./pagination";
 
 function slugify(input: string) {
   return input.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -215,6 +216,9 @@ export function CmsManager() {
     closePostModal();
   }
 
+  const pagePager = usePagination(pages);
+  const postPager = usePagination(posts);
+
   return (
     <div className="space-y-10">
 
@@ -238,7 +242,7 @@ export function CmsManager() {
               </tr>
             </thead>
             <tbody>
-              {pages.map((p) => (
+              {pagePager.pageItems.map((p) => (
                 <tr key={p.slug} className="cursor-pointer border-b border-line/50 last:border-0 hover:bg-bone/60" onClick={() => openEditPage(p)}>
                   <td className="px-5 py-3 font-medium text-ink">{p.title}</td>
                   <td className="px-5 py-3 font-mono text-ink-soft">/pages/{p.slug}</td>
@@ -249,6 +253,14 @@ export function CmsManager() {
               ))}
             </tbody>
           </table>
+          <Pagination
+            page={pagePager.page}
+            pageCount={pagePager.pageCount}
+            total={pagePager.total}
+            pageSize={pagePager.pageSize}
+            onPage={pagePager.setPage}
+            label="pages"
+          />
         </div>
       </section>
 
@@ -272,7 +284,7 @@ export function CmsManager() {
               </tr>
             </thead>
             <tbody>
-              {posts.map((p) => (
+              {postPager.pageItems.map((p) => (
                 <tr key={p.slug} className="cursor-pointer border-b border-line/50 last:border-0 hover:bg-bone/60" onClick={() => openEditPost(p)}>
                   <td className="px-5 py-3 font-medium text-ink">{p.title}</td>
                   <td className="px-5 py-3 font-mono text-ink-soft">/blog/{p.slug}</td>
@@ -283,6 +295,14 @@ export function CmsManager() {
               ))}
             </tbody>
           </table>
+          <Pagination
+            page={postPager.page}
+            pageCount={postPager.pageCount}
+            total={postPager.total}
+            pageSize={postPager.pageSize}
+            onPage={postPager.setPage}
+            label="posts"
+          />
         </div>
       </section>
 

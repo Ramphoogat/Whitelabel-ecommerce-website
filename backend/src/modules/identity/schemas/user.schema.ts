@@ -24,6 +24,10 @@ export class User extends Document {
 
   @Prop({ type: Date, default: null })
   lastLoginAt!: Date | null;
+
+  /** Sections the staff member can access. null/undefined = unrestricted (owner/admin). */
+  @Prop({ type: [String], default: null })
+  allowedSections!: string[] | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

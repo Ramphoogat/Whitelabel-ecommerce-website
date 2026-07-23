@@ -18,6 +18,7 @@ import {
 import { Address, AddressDocument } from './schemas/address.schema';
 import { Review, ReviewDocument } from './schemas/review.schema';
 import { RegisterCustomerDto } from './dto/register-customer.dto';
+import { SocialLoginCustomerDto } from './dto/social-login-customer.dto';
 import { LoginCustomerDto } from './dto/login-customer.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CreateAddressDto } from './dto/create-address.dto';
@@ -55,6 +56,36 @@ export class CustomerService {
       phone: dto.phone ?? null,
       authProvider: 'email',
     });
+
+    return this.issueTokenPair(customer, this.newFamily());
+  }
+
+  /**
+   * Third-party sign-in (Google / Apple / Facebook). First sign-in creates
+   * the customer with the provider recorded as authProvider — that's what
+   * the admin panel's Customers section shows as "joined via". Subsequent
+   * sign-ins just log them in; a password-registered account keeps its
+   * original provider tag.
+   */
+  async socialLogin(dto: SocialLoginCustomerDto): Promise<CustomerAuthResponseDto> {
+    let customer = await this.customerModel.findOne({ email: dto.email });
+
+    if (customer && !customer.isActive) {
+      throw new UnauthorizedException('Account no longer active');
+    }
+
+    if (!customer) {
+      customer = await this.customerModel.create({
+        email: dto.email,
+        passwordHash: null,
+        name: dto.name,
+        phone: null,
+        authProvider: dto.provider,
+      });
+    }
+
+    customer.lastLoginAt = new Date();
+    await customer.save();
 
     return this.issueTokenPair(customer, this.newFamily());
   }

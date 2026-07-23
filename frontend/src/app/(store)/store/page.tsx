@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StoreHero } from "@/components/store/hero";
 import { ProductCard } from "@/components/store/product-card";
+import { ProductSlider } from "@/components/store/product-slider";
 import { useProducts } from "@/hooks/use-catalog";
 import { useStoreTheme } from "@/components/theme/theme-provider";
-import { GRID_DENSITY_CLASSES } from "@/lib/theme/presets";
+import { GRID_DENSITY_CLASSES, DEFAULT_HOME_SECTIONS } from "@/lib/theme/presets";
+import type { HomeSectionKey } from "@/lib/theme/types";
 import { unsplashUrl } from "@/lib/data/products";
 import { BANNERS } from "@/lib/data/admin-marketing";
+import { BLOG_POSTS } from "@/lib/data/admin-cms";
 
 /* ── Top strip banner ───────────────────────────────────────────────────── */
 const TOP_STRIP = BANNERS.find((b) => b.active && b.placement === "Top Strip");
@@ -293,8 +296,9 @@ function NewArrivalsSection() {
   const { products } = useProducts();
   const { storeTheme } = useStoreTheme();
   const gridClass = GRID_DENSITY_CLASSES[storeTheme.gridDensity] ?? GRID_DENSITY_CLASSES[4];
-  const newArrivals = products.filter((p) => p.new).slice(0, 4);
-  const featured = newArrivals.length > 0 ? newArrivals : products.slice(0, 4);
+  const slider = storeTheme.productSlider;
+  const newArrivals = products.filter((p) => p.new).slice(0, slider ? 12 : 4);
+  const featured = newArrivals.length > 0 ? newArrivals : products.slice(0, slider ? 12 : 4);
 
   return (
     <section className="border-t border-line/50" style={{ paddingBlock: "var(--section-y, 5.5rem)" }}>
@@ -307,11 +311,93 @@ function NewArrivalsSection() {
             View all →
           </Link>
         </div>
-        <div className={`mt-10 ${gridClass}`}>
-          {featured.map((p) => <ProductCard key={p.slug} product={p} />)}
+        <div className="mt-10">
+          {slider ? (
+            <ProductSlider products={featured} />
+          ) : (
+            <div className={gridClass}>
+              {featured.map((p) => <ProductCard key={p.slug} product={p} />)}
+            </div>
+          )}
         </div>
       </div>
     </section>
+  );
+}
+
+/* ── From the blog ──────────────────────────────────────────────────────── */
+function BlogSection() {
+  const posts = BLOG_POSTS.filter((p) => p.status === "published").slice(0, 3);
+  if (posts.length === 0) return null;
+
+  return (
+    <section className="border-t border-line/50" style={{ paddingBlock: "var(--section-y, 5.5rem)" }}>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <div className="flex items-baseline justify-between">
+          <h2 className="font-display italic text-ink" style={{ fontSize: "calc(1.75rem * var(--type-display, 1))" }}>
+            From the Blog
+          </h2>
+          <Link href="/blog" className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-soft transition-colors hover:text-accent">
+            All posts →
+          </Link>
+        </div>
+        <div className="mt-10 grid gap-6 sm:grid-cols-3">
+          {posts.map((post) => (
+            <Link key={post.slug} href={`/blog/${post.slug}`} className="group block">
+              {post.coverImage && (
+                <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius-lg)]">
+                  <Image
+                    src={unsplashUrl(post.coverImage, 600)}
+                    alt={post.title}
+                    fill
+                    sizes="(min-width: 640px) 33vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                </div>
+              )}
+              <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft">{post.date}</p>
+              <h3
+                className="mt-1.5 font-display italic leading-snug text-ink transition-colors group-hover:text-accent"
+                style={{ fontSize: "calc(1.15rem * var(--type-display, 1))" }}
+              >
+                {post.title}
+              </h3>
+              {post.excerpt && (
+                <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-ink-soft">{post.excerpt}</p>
+              )}
+            </Link>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Back to top ────────────────────────────────────────────────────────── */
+function BackToTop() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <button
+      type="button"
+      aria-label="Back to top"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      className="fixed bottom-6 right-6 z-40 flex size-11 items-center justify-center rounded-full border shadow-lg transition-transform hover:-translate-y-0.5"
+      style={{ background: "var(--accent)", color: "var(--accent-ink)", borderColor: "transparent" }}
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M7 11.5v-9M3 6.5L7 2.5l4 4" />
+      </svg>
+    </button>
   );
 }
 
@@ -349,18 +435,45 @@ function FullCollectionSection() {
 }
 
 /* ── Page ────────────────────────────────────────────────────────────────── */
+
+/** Every band the merchant can toggle/reorder from Theme Studio → Home page builder. */
+const SECTION_COMPONENTS: Record<HomeSectionKey, React.ComponentType> = {
+  categories: () => (
+    <>
+      <CategoryStrip />
+      <CategoryBanner />
+    </>
+  ),
+  arrivals: NewArrivalsSection,
+  campaign: CampaignBand,
+  values: ValueProps,
+  testimonials: Testimonials,
+  collection: FullCollectionSection,
+  blog: BlogSection,
+};
+
 export default function StoreLandingPage() {
+  const { storeTheme } = useStoreTheme();
+  const sections =
+    storeTheme.homeSections && storeTheme.homeSections.length > 0
+      ? storeTheme.homeSections
+      : DEFAULT_HOME_SECTIONS;
+
+  // smoothScroll knob: animate anchor + back-to-top scrolling storewide.
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = storeTheme.smoothScroll ? "smooth" : "auto";
+    return () => { document.documentElement.style.scrollBehavior = ""; };
+  }, [storeTheme.smoothScroll]);
+
   return (
     <>
       <TopStripBanner />
       <StoreHero />
-      <CategoryStrip />
-      <CategoryBanner />
-      <NewArrivalsSection />
-      <CampaignBand />
-      <ValueProps />
-      <Testimonials />
-      <FullCollectionSection />
+      {sections.map((key) => {
+        const Section = SECTION_COMPONENTS[key];
+        return Section ? <Section key={key} /> : null;
+      })}
+      {storeTheme.backToTop && <BackToTop />}
     </>
   );
 }

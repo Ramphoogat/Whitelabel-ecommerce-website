@@ -5,6 +5,7 @@ import { User, UserSchema } from './schemas/user.schema';
 import { RefreshToken, RefreshTokenSchema } from './schemas/refresh-token.schema';
 import { IdentityService } from './identity.service';
 import { IdentityController } from './identity.controller';
+import { StaffAdminController } from './staff-admin.controller';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { IdentityController } from './identity.controller';
     // module runnable/testable in isolation if extracted later.
     JwtModule.register({}),
   ],
-  controllers: [IdentityController],
+  controllers: [IdentityController, StaffAdminController],
   providers: [IdentityService],
   exports: [IdentityService],
 })

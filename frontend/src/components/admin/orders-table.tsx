@@ -2,6 +2,7 @@
 
 import { useState, Fragment } from "react";
 import { STATUS_STYLES, RECENT_ORDERS } from "@/lib/data/admin";
+import { Pagination, usePagination } from "./pagination";
 import { useAdminOrders } from "@/hooks/use-admin-data";
 import { SkeletonTable } from "@/components/ui/skeleton";
 import type { AdminOrder, OrderStatus } from "@/lib/data/admin";
@@ -160,6 +161,8 @@ export function OrdersTable() {
     } as AdminOrder;
   });
 
+  const { pageItems, page, pageCount, setPage, total, pageSize } = usePagination(enriched);
+
   function toggle(id: string) {
     setExpandedId((prev) => (prev === id ? null : id));
   }
@@ -181,7 +184,7 @@ export function OrdersTable() {
           <tbody>
             {isLoading && <SkeletonTable rows={6} cols={6} />}
             {!isLoading &&
-              enriched.map((o) => {
+              pageItems.map((o) => {
                 const expanded = expandedId === o._id;
                 return (
                   <Fragment key={o._id}>
@@ -219,6 +222,7 @@ export function OrdersTable() {
               })}
           </tbody>
         </table>
+        <Pagination page={page} pageCount={pageCount} total={total} pageSize={pageSize} onPage={setPage} label="orders" />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { SHIPPING_ZONES, CARRIERS, type ShippingZone, type Carrier } from "@/lib/data/admin-shipping";
 import { formatPrice } from "@/lib/data/products";
 import { Modal } from "./modal";
+import { Pagination, usePagination } from "./pagination";
 
 /* ── Zone draft ── */
 interface ZoneDraft {
@@ -177,6 +178,8 @@ export function ShippingManager() {
     closeCarrierModal();
   }
 
+  const zonePager = usePagination(zones);
+
   return (
     <div className="space-y-10">
 
@@ -204,7 +207,7 @@ export function ShippingManager() {
               </tr>
             </thead>
             <tbody>
-              {zones.map((z) => (
+              {zonePager.pageItems.map((z) => (
                 <tr
                   key={z.id}
                   className="cursor-pointer border-b border-line/50 last:border-0 hover:bg-bone/60"
@@ -224,6 +227,14 @@ export function ShippingManager() {
               ))}
             </tbody>
           </table>
+          <Pagination
+            page={zonePager.page}
+            pageCount={zonePager.pageCount}
+            total={zonePager.total}
+            pageSize={zonePager.pageSize}
+            onPage={zonePager.setPage}
+            label="zones"
+          />
         </div>
       </section>
 

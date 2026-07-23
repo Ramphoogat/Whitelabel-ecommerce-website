@@ -4,6 +4,7 @@ import { Throttle } from '@nestjs/throttler';
 import { CustomerService } from './customer.service';
 import { RegisterCustomerDto } from './dto/register-customer.dto';
 import { LoginCustomerDto } from './dto/login-customer.dto';
+import { SocialLoginCustomerDto } from './dto/social-login-customer.dto';
 import { CustomerRefreshTokenDto } from './dto/customer-refresh-token.dto';
 import { Public } from '../../shared/decorators/public.decorator';
 import { CurrentCustomer } from '../../shared/decorators/current-customer.decorator';
@@ -29,6 +30,16 @@ export class CustomerAuthController {
   @ApiOperation({ summary: 'Log in with email + password' })
   login(@Body() dto: LoginCustomerDto) {
     return this.customerService.login(dto);
+  }
+
+  @Public()
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  @Post('social')
+  @ApiOperation({
+    summary: 'Sign in via a third-party provider (Google / Apple / Facebook); creates the account on first use',
+  })
+  socialLogin(@Body() dto: SocialLoginCustomerDto) {
+    return this.customerService.socialLogin(dto);
   }
 
   @Public()

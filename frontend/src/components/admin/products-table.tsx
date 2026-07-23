@@ -6,6 +6,7 @@ import { STATUS_BADGE } from "@/lib/data/admin-products";
 import { formatPrice } from "@/lib/data/products";
 import { useAdminProducts, useAdminTaxRates } from "@/hooks/use-admin-data";
 import { SkeletonTable } from "@/components/ui/skeleton";
+import { Pagination, usePagination } from "./pagination";
 import type { AdminApiTaxRate } from "@/lib/api/admin.api";
 
 function applyTax(priceCents: number, rates: AdminApiTaxRate[]): number {
@@ -34,6 +35,8 @@ export function ProductsTable() {
       p.name.toLowerCase().includes(query.toLowerCase()) ||
       p.sku.toLowerCase().includes(query.toLowerCase()),
   );
+
+  const { pageItems, page, pageCount, setPage, total, pageSize } = usePagination(filtered);
 
   return (
     <div>
@@ -72,7 +75,7 @@ export function ProductsTable() {
           </thead>
           <tbody>
             {isLoading && <SkeletonTable rows={5} cols={8} />}
-            {!isLoading && filtered.map((p) => {
+            {!isLoading && pageItems.map((p) => {
               const taxedPrice = applyTax(p.price, taxRates);
               const taxAmount = taxedPrice - p.price;
               return (
@@ -112,6 +115,7 @@ export function ProductsTable() {
             })}
           </tbody>
         </table>
+        <Pagination page={page} pageCount={pageCount} total={total} pageSize={pageSize} onPage={setPage} label="products" />
       </div>
     </div>
   );

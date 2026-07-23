@@ -20,6 +20,78 @@ export function ProductCard({ product }: { product: Product }) {
   const [activeColor, setActiveColor] = useState(product.colors[0]);
   const { storeTheme } = useStoreTheme();
   const tileClass = CARD_TILE_CLASSES[storeTheme.cardStyle] ?? CARD_TILE_CLASSES.glass;
+  const layout = storeTheme.cardLayout ?? "vertical";
+
+  if (layout === "overlay") {
+    return (
+      <Link href={`/products/${product.slug}`} className="group block">
+        <Tilt>
+          <div
+            className={`relative aspect-[4/5] overflow-hidden rounded-[var(--radius-lg)] ${tileClass}`}
+            style={{ background: product.tone }}
+          >
+            <Image
+              src={unsplashUrl(product.image, 600)}
+              alt={product.name}
+              fill
+              sizes="(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+            />
+            {product.new && (
+              <span className="absolute left-3.5 top-3.5 rounded-full bg-bone/95 px-3 py-1 font-mono text-[9px] uppercase tracking-[0.16em] text-ink/80">
+                New
+              </span>
+            )}
+            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent px-4 pb-4 pt-12">
+              <h3 className="font-display text-[15px] leading-snug text-white">{product.name}</h3>
+              <div className="mt-1 flex items-center justify-between">
+                <p className="font-mono text-[9px] uppercase tracking-[0.14em] text-white/70">{product.category}</p>
+                <p className="font-mono text-[13px] text-white">{formatPrice(product.price)}</p>
+              </div>
+            </div>
+          </div>
+        </Tilt>
+      </Link>
+    );
+  }
+
+  if (layout === "horizontal") {
+    return (
+      <Link
+        href={`/products/${product.slug}`}
+        className={`group flex gap-4 overflow-hidden rounded-[var(--radius-lg)] p-3 ${tileClass}`}
+        style={{ background: "var(--surface)" }}
+      >
+        <div
+          className="relative aspect-[4/5] w-28 shrink-0 overflow-hidden rounded-[var(--radius-md)]"
+          style={{ background: product.tone }}
+        >
+          <Image
+            src={unsplashUrl(product.image, 300)}
+            alt={product.name}
+            fill
+            sizes="112px"
+            className="object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+          />
+        </div>
+        <div className="flex min-w-0 flex-1 flex-col justify-center">
+          {product.new && (
+            <span className="mb-1 w-fit rounded-full bg-accent-soft px-2 py-0.5 font-mono text-[8px] uppercase tracking-[0.14em] text-accent">
+              New
+            </span>
+          )}
+          <h3 className="font-display text-[15px] leading-snug text-ink">{product.name}</h3>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft/70">{product.category}</p>
+          <div className="mt-2 flex items-baseline gap-2">
+            <p className="font-mono text-[13px] text-ink">{formatPrice(product.price)}</p>
+            {product.compareAtPrice && (
+              <p className="font-mono text-[11px] text-ink-soft/60 line-through">{formatPrice(product.compareAtPrice)}</p>
+            )}
+          </div>
+        </div>
+      </Link>
+    );
+  }
 
   return (
     <Link href={`/products/${product.slug}`} className="group block">

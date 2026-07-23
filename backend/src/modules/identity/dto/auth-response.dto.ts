@@ -6,5 +6,6 @@ export interface AuthResponseDto {
     email: string;
     name: string;
     role: string;
+    allowedSections: string[] | null;
   };
 }

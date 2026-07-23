@@ -6,6 +6,7 @@ import { AdminTopbar } from "@/components/admin/topbar";
 import { useAdminCurrencyRates } from "@/hooks/use-admin-data";
 import { upsertCurrencyRate, deleteCurrencyRate } from "@/lib/api/admin.api";
 import { SkeletonTable } from "@/components/ui/skeleton";
+import { Pagination, usePagination } from "@/components/admin/pagination";
 import { toast } from "@/stores/toast-store";
 
 const BLANK = { baseCurrency: "USD", targetCurrency: "", rate: 0 };
@@ -15,6 +16,8 @@ export default function AdminCurrencyPage() {
   const { data: rates, isLoading } = useAdminCurrencyRates();
   const [form, setForm] = useState(BLANK);
   const [showForm, setShowForm] = useState(false);
+
+  const { pageItems, page, pageCount, setPage, total, pageSize } = usePagination(rates ?? []);
 
   const upsertMut = useMutation({
     mutationFn: () => upsertCurrencyRate(form),
@@ -112,7 +115,7 @@ export default function AdminCurrencyPage() {
             <tbody>
               {isLoading && <SkeletonTable rows={3} cols={4} />}
               {!isLoading &&
-                (rates ?? []).map((r) => (
+                pageItems.map((r) => (
                   <tr key={r._id} className="border-b border-line/50 last:border-0 hover:bg-bone/60">
                     <td className="px-5 py-3 font-mono text-ink">
                       {r.baseCurrency} → {r.targetCurrency}
@@ -149,6 +152,7 @@ export default function AdminCurrencyPage() {
               )}
             </tbody>
           </table>
+          <Pagination page={page} pageCount={pageCount} total={total} pageSize={pageSize} onPage={setPage} label="rates" />
         </div>
       </div>
     </>

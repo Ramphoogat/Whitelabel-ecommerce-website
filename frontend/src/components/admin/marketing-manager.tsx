@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { COUPONS, BANNERS, type Coupon, type Banner } from "@/lib/data/admin-marketing";
 import { createCoupon, createBanner } from "@/lib/api/admin.api";
 import { Modal } from "./modal";
+import { Pagination, usePagination } from "./pagination";
 
 const BANNER_TONES = ["#4b9ec4", "#74b0a0", "#9d8fc7", "#3d5a76", "#c2a878"];
 const PLACEMENTS = ["Homepage Hero", "Top Strip", "Category Page"];
@@ -164,6 +165,8 @@ export function MarketingManager() {
     closeBannerModal();
   }
 
+  const couponPager = usePagination(coupons);
+
   return (
     <div className="space-y-10">
 
@@ -188,7 +191,7 @@ export function MarketingManager() {
               </tr>
             </thead>
             <tbody>
-              {coupons.map((c) => (
+              {couponPager.pageItems.map((c) => (
                 <tr
                   key={c.code}
                   className="cursor-pointer border-b border-line/50 last:border-0 hover:bg-bone/60"
@@ -212,6 +215,14 @@ export function MarketingManager() {
               ))}
             </tbody>
           </table>
+          <Pagination
+            page={couponPager.page}
+            pageCount={couponPager.pageCount}
+            total={couponPager.total}
+            pageSize={couponPager.pageSize}
+            onPage={couponPager.setPage}
+            label="coupons"
+          />
         </div>
       </section>
 

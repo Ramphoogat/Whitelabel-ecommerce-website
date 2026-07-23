@@ -12,10 +12,12 @@ const LIVE_LINKS = [
   { label: "Inventory",  href: "/admin/inventory" },
   { label: "Orders",     href: "/admin/orders" },
   { label: "Customers",  href: "/admin/customers" },
+  { label: "Staff",      href: "/admin/staff" },
   { label: "Marketing",  href: "/admin/marketing" },
   { label: "CMS",        href: "/admin/cms" },
   { label: "Shipping",   href: "/admin/shipping" },
   { label: "Payments",   href: "/admin/payments" },
+  { label: "Wallet",     href: "/admin/wallet" },
   { label: "Tax",        href: "/admin/tax" },
   { label: "Currency",   href: "/admin/currency" },
   { label: "Analytics",  href: "/admin/analytics" },
@@ -63,6 +65,27 @@ export function AdminSidebar() {
       <nav className={`flex flex-1 flex-col space-y-1 overflow-y-auto py-5 ${rail ? "px-2" : compact ? "px-2" : "px-3"}`}>
         {LIVE_LINKS.map((item) => {
           const active = item.href === "/admin" ? pathname === "/admin" : pathname.startsWith(item.href);
+          const sectionKey = item.href === "/admin" ? "dashboard" : item.href.replace("/admin/", "");
+          const isStaff = user?.role === "staff";
+          const allowed = !isStaff || user?.allowedSections == null || user.allowedSections.includes(sectionKey);
+          if (!allowed) {
+            return (
+              <span
+                key={item.href}
+                title={rail ? `${item.label} (no access)` : `${item.label} — no access`}
+                className={`block cursor-not-allowed select-none rounded-[var(--radius-sm)] font-mono uppercase opacity-30 ${
+                  rail
+                    ? "px-1 py-3 text-center text-[20px] tracking-[0.05em]"
+                    : compact
+                      ? "px-3 py-2 text-[14px] tracking-[0.06em]"
+                      : "px-3 py-2.5 text-[14px] tracking-[0.08em]"
+                }`}
+                style={{ color: "var(--ink)" }}
+              >
+                {rail ? monogram(item.label) : item.label}
+              </span>
+            );
+          }
           return (
             <Link
               key={item.href}

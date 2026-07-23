@@ -5,7 +5,7 @@ export type ProductVariantDocument = HydratedDocument<ProductVariant>;
 
 @Schema({ timestamps: true, collection: 'product_variants' })
 export class ProductVariant extends Document {
-  @Prop({ required: true, type: Types.ObjectId, ref: 'Product', index: true })
+  @Prop({ required: true, type: Types.ObjectId, ref: 'Product' })
   productId!: Types.ObjectId;
 
   @Prop({ required: true, uppercase: true, trim: true })

@@ -5,6 +5,7 @@ import type {
   FontKey,
   GridDensity,
   HeadingScale,
+  HomeSectionKey,
   MonoFontKey,
   SectionSpacing,
   StoreThemeConfig,
@@ -77,6 +78,9 @@ export const FONT_OPTIONS: { key: FontKey; label: string; stack: string }[] = [
   { key: "plexmono", label: "IBM Plex Mono", stack: "var(--font-plexmono), ui-monospace, monospace" },
   { key: "system", label: "System Sans", stack: "ui-sans-serif, system-ui, sans-serif" },
   { key: "serif", label: "Editorial Serif", stack: "Georgia, 'Times New Roman', serif" },
+  { key: "cormorant", label: "Cormorant Garamond", stack: "var(--font-cormorant), Georgia, serif" },
+  { key: "playfair", label: "Playfair Display", stack: "var(--font-playfair), Georgia, serif" },
+  { key: "fraunces", label: "Fraunces", stack: "var(--font-fraunces), Georgia, serif" },
 ];
 
 export function fontStack(key: FontKey): string {
@@ -127,6 +131,27 @@ export const GRID_DENSITY_CLASSES: Record<GridDensity, string> = {
   4: "grid grid-cols-2 gap-x-5 gap-y-10 sm:grid-cols-3 lg:grid-cols-4",
 };
 
+/** Labels + descriptions for the reorderable home-page section builder. */
+export const HOME_SECTION_META: Record<HomeSectionKey, { label: string; hint: string }> = {
+  categories:   { label: "Category strip",  hint: "pill links to each category" },
+  arrivals:     { label: "New arrivals",    hint: "latest products, grid or slider" },
+  campaign:     { label: "Campaign band",   hint: "editorial image + copy block" },
+  values:       { label: "Value props",     hint: "the four brand promises" },
+  testimonials: { label: "Testimonials",    hint: "customer quotes" },
+  collection:   { label: "Full collection", hint: "the complete product grid" },
+  blog:         { label: "From the blog",   hint: "latest published posts" },
+};
+
+export const DEFAULT_HOME_SECTIONS: HomeSectionKey[] = [
+  "categories",
+  "arrivals",
+  "campaign",
+  "values",
+  "testimonials",
+  "collection",
+  "blog",
+];
+
 /** Matches the :root light-theme values in globals.css and the backend schema defaults. */
 export const DEFAULT_STORE_THEME: StoreThemeConfig = {
   accent: "#4b9ec4",
@@ -146,10 +171,17 @@ export const DEFAULT_STORE_THEME: StoreThemeConfig = {
   headingScale: "classic",
   cornerStyle: "soft",
   headerStyle: "split",
+  navStyle: "top",
   heroVariant: "editorial",
   gridDensity: 4,
   cardStyle: "glass",
+  cardLayout: "vertical",
   sectionSpacing: "regular",
+  footerStyle: "columns",
+  homeSections: DEFAULT_HOME_SECTIONS,
+  productSlider: false,
+  backToTop: true,
+  smoothScroll: true,
   sidebarStyle: "expanded",
   density: "comfortable",
   panelStyle: "card",
@@ -263,12 +295,8 @@ export const STYLE_PRESETS: StylePreset[] = [
       cornerStyle: "round", cardStyle: "glass", panelStyle: "card",
     },
   },
-  // The business-vertical palettes, as brand-colour-only presets.
-  {
-    name: "Fashion & Apparel",
-    note: "vertical palette — glacier + mint",
-    theme: { accent: "#4b9ec4", accentInk: "#0c2431", accentSoft: "#dcecf4", secondary: "#74b0a0", secondarySoft: "#dceee7" },
-  },
+  // The business-vertical palettes, as brand-colour-only presets. (The
+  // fashion vertical is omitted — it's identical to Glacier's palette.)
   {
     // Accent runs slightly deeper than the vertical's mint token so links
     // stay readable on light canvases (the raw mint sits ~2.2:1 on cream).
@@ -280,6 +308,96 @@ export const STYLE_PRESETS: StylePreset[] = [
     name: "General Store",
     note: "vertical palette — frost lavender",
     theme: { accent: "#9d8fc7", accentInk: "#241d3a", accentSoft: "#e9e4f4", secondary: "#4b9ec4", secondarySoft: "#dcecf4" },
+  },
+];
+
+/**
+ * Premium presets: complete branded looks — every colour token plus display
+ * and body fonts. Design rules: one restrained accent used sparingly (never
+ * as a background wash), near-black or warm-ivory canvases instead of pure
+ * #000/#fff, muted desaturated secondaries, hairline borders, pill buttons.
+ * Like STYLE_PRESETS they never touch layout choices.
+ */
+export const PREMIUM_PRESETS: StylePreset[] = [
+  {
+    name: "Noir Atelier",
+    note: "near-black · warm gold",
+    theme: {
+      accent: "#C8A96E", accentInk: "#14120c", accentSoft: "#23202c",
+      secondary: "#8a8fa3", secondarySoft: "#1c1c26",
+      background: "#0b0b12", surface: "#16161f", ink: "#ece7dc", inkSoft: "#9a97a5", line: "#28283a",
+      fontDisplay: "cormorant", fontBody: "inter",
+    },
+  },
+  {
+    name: "Ivory & Gold",
+    note: "gallery white · brass",
+    theme: {
+      accent: "#b08d4f", accentInk: "#ffffff", accentSoft: "#f3ead9",
+      secondary: "#2b2724", secondarySoft: "#eeeae2",
+      background: "#faf7f0", surface: "#ffffff", ink: "#1f1b16", inkSoft: "#857d6f", line: "#eae3d5",
+      fontDisplay: "cormorant", fontBody: "inter",
+    },
+  },
+  {
+    name: "Emerald Estate",
+    note: "deep green · gilt",
+    theme: {
+      accent: "#1e5c46", accentInk: "#f2efe4", accentSoft: "#e2ebe4",
+      secondary: "#b3873b", secondarySoft: "#f0e6cf",
+      background: "#f5f4ec", surface: "#fbfbf5", ink: "#1d2721", inkSoft: "#6b7a70", line: "#e0e2d5",
+      fontDisplay: "playfair", fontBody: "inter",
+    },
+  },
+  {
+    name: "Sapphire Maison",
+    note: "ink navy · brass",
+    theme: {
+      accent: "#1e3a5f", accentInk: "#eef2f7", accentSoft: "#e3e9f1",
+      secondary: "#a8894e", secondarySoft: "#f0e9d8",
+      background: "#f6f6f1", surface: "#fcfcf8", ink: "#1a2330", inkSoft: "#6e7889", line: "#e3e4dd",
+      fontDisplay: "playfair", fontBody: "inter",
+    },
+  },
+  {
+    name: "Bordeaux",
+    note: "wine · champagne",
+    theme: {
+      accent: "#6e1e2e", accentInk: "#f7ecd9", accentSoft: "#f1e2e2",
+      secondary: "#c8b087", secondarySoft: "#f3ecdd",
+      background: "#faf6f1", surface: "#fffdf9", ink: "#2a1b1c", inkSoft: "#867470", line: "#ecdfd6",
+      fontDisplay: "cormorant", fontBody: "inter",
+    },
+  },
+  {
+    name: "Onyx Rosé",
+    note: "charcoal · rose gold",
+    theme: {
+      accent: "#d9a3a0", accentInk: "#241417", accentSoft: "#2a2023",
+      secondary: "#8d8593", secondarySoft: "#201c24",
+      background: "#121014", surface: "#1b181e", ink: "#efe9e7", inkSoft: "#a29aa0", line: "#2c272e",
+      fontDisplay: "fraunces", fontBody: "inter",
+    },
+  },
+  {
+    name: "Café Crème",
+    note: "espresso · latte",
+    theme: {
+      accent: "#4a3728", accentInk: "#f4ede4", accentSoft: "#e9ddd0",
+      secondary: "#a5866b", secondarySoft: "#efe5d9",
+      background: "#f4ede4", surface: "#fdf9f3", ink: "#2e241c", inkSoft: "#8b7c6c", line: "#e7dbcc",
+      fontDisplay: "cormorant", fontBody: "inter",
+    },
+  },
+  {
+    name: "Terra Atelier",
+    note: "clay · forest",
+    theme: {
+      accent: "#a85a35", accentInk: "#fdf6ee", accentSoft: "#f3e3d8",
+      secondary: "#33523f", secondarySoft: "#dfe8e0",
+      background: "#f7f2ea", surface: "#fffdf8", ink: "#26211a", inkSoft: "#7f7666", line: "#e9e0d1",
+      fontDisplay: "fraunces", fontBody: "inter",
+    },
   },
 ];
 

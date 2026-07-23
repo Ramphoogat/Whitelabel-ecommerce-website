@@ -4,18 +4,22 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getOrganizationSettings, updateOrganizationTheme, type ThemeScope } from "@/lib/api/admin.api";
 import {
-  ACCENT_SWATCHES,
   CORNER_STYLES,
+  DEFAULT_HOME_SECTIONS,
   DEFAULT_STORE_THEME,
   FONT_OPTIONS,
   HEADING_SCALES,
+  HOME_SECTION_META,
   MONO_FONT_OPTIONS,
+  PREMIUM_PRESETS,
   SECTION_SPACINGS,
   STYLE_PRESETS,
   TYPE_SCALES,
+  fontStack,
 } from "@/lib/theme/presets";
+import type { StylePreset } from "@/lib/theme/presets";
 import { contrastWarnings } from "@/lib/theme/contrast";
-import type { FontKey, MonoFontKey, StoreThemeConfig } from "@/lib/theme/types";
+import type { FontKey, HomeSectionKey, MonoFontKey, StoreThemeConfig } from "@/lib/theme/types";
 
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 
@@ -53,6 +57,120 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** On/off pill for the boolean storefront knobs. */
+function ToggleRow({
+  label,
+  hint,
+  on,
+  onChange,
+}: {
+  label: string;
+  hint: string;
+  on: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      onClick={() => onChange(!on)}
+      className="flex w-full items-center gap-3 rounded-[var(--radius-md)] border px-3 py-2.5 text-left transition-colors"
+      style={{ borderColor: on ? "var(--accent)" : "var(--line)", background: on ? "var(--accent-soft)" : "transparent" }}
+    >
+      <span
+        className="relative h-5 w-9 shrink-0 rounded-full transition-colors"
+        style={{ background: on ? "var(--accent)" : "var(--line)" }}
+      >
+        <span className="absolute top-0.5 size-4 rounded-full bg-surface transition-all" style={{ left: on ? "18px" : "2px" }} />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-[13px] font-medium text-ink">{label}</span>
+        <span className="block truncate text-[11px] text-ink-soft">{hint}</span>
+      </span>
+    </button>
+  );
+}
+
+/**
+ * Home page builder: toggle sections on/off and reorder them with ▲/▼.
+ * The saved order is exactly what the storefront home renders.
+ */
+function HomeSectionBuilder({
+  value,
+  onChange,
+}: {
+  value: HomeSectionKey[];
+  onChange: (v: HomeSectionKey[]) => void;
+}) {
+  const active = value;
+  const hidden = DEFAULT_HOME_SECTIONS.filter((k) => !active.includes(k));
+
+  function move(idx: number, dir: -1 | 1) {
+    const next = [...active];
+    const [item] = next.splice(idx, 1);
+    next.splice(idx + dir, 0, item);
+    onChange(next);
+  }
+
+  return (
+    <div className="space-y-2">
+      {active.map((key, i) => (
+        <div
+          key={key}
+          className="flex items-center gap-3 rounded-[var(--radius-md)] border border-line px-3 py-2"
+          style={{ background: "var(--surface)" }}
+        >
+          <span className="font-mono text-[10px] text-ink-soft/60">{i + 1}</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-[13px] font-medium text-ink">{HOME_SECTION_META[key].label}</p>
+            <p className="truncate text-[11px] text-ink-soft">{HOME_SECTION_META[key].hint}</p>
+          </div>
+          <button
+            type="button"
+            aria-label={`Move ${HOME_SECTION_META[key].label} up`}
+            disabled={i === 0}
+            onClick={() => move(i, -1)}
+            className="rounded-full border border-line px-2 py-1 font-mono text-[10px] text-ink-soft hover:border-accent hover:text-accent disabled:opacity-25"
+          >
+            ▲
+          </button>
+          <button
+            type="button"
+            aria-label={`Move ${HOME_SECTION_META[key].label} down`}
+            disabled={i === active.length - 1}
+            onClick={() => move(i, 1)}
+            className="rounded-full border border-line px-2 py-1 font-mono text-[10px] text-ink-soft hover:border-accent hover:text-accent disabled:opacity-25"
+          >
+            ▼
+          </button>
+          <button
+            type="button"
+            onClick={() => onChange(active.filter((k) => k !== key))}
+            className="font-mono text-[10px] uppercase tracking-[0.06em] text-ink-soft hover:text-danger"
+          >
+            Hide
+          </button>
+        </div>
+      ))}
+      {hidden.length > 0 && (
+        <div className="flex flex-wrap gap-2 pt-1">
+          {hidden.map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => onChange([...active, key])}
+              className="rounded-full border border-dashed border-line px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.06em] text-ink-soft transition-colors hover:border-accent hover:text-accent"
+            >
+              + {HOME_SECTION_META[key].label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /** Small segmented picker used for every bounded structural knob. */
 function Segmented<T extends string | number>({
   options,
@@ -85,6 +203,78 @@ function Segmented<T extends string | number>({
         </button>
       ))}
     </div>
+  );
+}
+
+/**
+ * Premium preset card: a miniature of the look itself — swatch strip on the
+ * preset's canvas with a serif "Aa" and a pill button in the accent, colour
+ * dots, name, tag line. Selecting one fills every colour field and the
+ * heading/body font selects; layout choices stay put.
+ */
+function PremiumPresetCard({
+  preset,
+  selected,
+  onSelect,
+}: {
+  preset: StylePreset;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  // Palette-only presets (the business verticals) don't define a canvas —
+  // fall back to the default theme's so the card still previews faithfully.
+  const t = { ...DEFAULT_STORE_THEME, ...preset.theme };
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      title={preset.note}
+      aria-pressed={selected}
+      className="group flex flex-col rounded-[var(--radius-lg)] border p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-md"
+      style={{
+        borderColor: selected ? "var(--ink)" : "var(--line)",
+        background: "var(--surface)",
+        boxShadow: selected ? "0 0 0 1px var(--ink), 0 6px 22px rgba(0,0,0,0.10)" : undefined,
+      }}
+    >
+      {/* Swatch strip — the preset's own canvas, type, and pill button */}
+      <span
+        className="flex h-16 items-center justify-center gap-3 rounded-[var(--radius-md)] border"
+        style={{ background: t.background, borderColor: t.line }}
+      >
+        <span
+          className="italic"
+          style={{
+            color: t.ink,
+            fontFamily: t.fontDisplay ? fontStack(t.fontDisplay) : "Georgia, serif",
+            fontSize: "20px",
+          }}
+        >
+          Aa
+        </span>
+        <span
+          className="rounded-full px-3 py-1 font-mono text-[9px] uppercase tracking-[0.14em]"
+          style={{ background: t.accent, color: t.accentInk }}
+        >
+          Shop
+        </span>
+      </span>
+
+      {/* Dots + name */}
+      <span className="mt-3 flex items-center gap-2">
+        <span className="flex gap-1.5">
+          {[t.accent, t.secondary, t.ink].map((c, i) => (
+            <span
+              key={i}
+              className="size-2.5 rounded-full"
+              style={{ background: c, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.12)" }}
+            />
+          ))}
+        </span>
+        <span className="text-[13px] font-medium leading-tight text-ink">{preset.name}</span>
+      </span>
+      <span className="mt-1 text-[11px] leading-snug text-ink-soft">{preset.note}</span>
+    </button>
   );
 }
 
@@ -138,11 +328,21 @@ function ColorField({
  * apply the draft for that window only — the live surfaces never see an
  * unsaved draft.
  */
-function LivePreview({ surface, draft }: { surface: ThemeScope; draft: StoreThemeConfig }) {
+function LivePreview({
+  surface,
+  draft,
+  dirty,
+}: {
+  surface: ThemeScope;
+  draft: StoreThemeConfig;
+  dirty: boolean;
+}) {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.32);
+  const [boxW, setBoxW] = useState(420);
   const [loaded, setLoaded] = useState(false);
+  const [device, setDevice] = useState<"desktop" | "mobile">("desktop");
 
   // Full-size preview window, kept in sync with the draft while it's open.
   const popupRef = useRef<Window | null>(null);
@@ -151,18 +351,23 @@ function LivePreview({ surface, draft }: { surface: ThemeScope; draft: StoreThem
   const draftRef = useRef(draft);
   draftRef.current = draft;
 
-  const FRAME_W = 1280;
-  const FRAME_H = 900;
+  const FRAME_W = device === "mobile" ? 390 : 1280;
+  const FRAME_H = device === "mobile" ? 844 : 900;
 
   useEffect(() => {
     const el = boxRef.current;
     if (!el) return;
-    const update = () => setScale(el.clientWidth / FRAME_W);
+    const update = () => {
+      setBoxW(el.clientWidth);
+      // Mobile frames are narrower than the rail — cap the scale so the
+      // phone doesn't blow up to full rail width and tower over the card.
+      setScale(Math.min(el.clientWidth / FRAME_W, device === "mobile" ? 0.62 : 1));
+    };
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
+  }, [FRAME_W, device]);
 
   const post = useCallback(() => {
     const msg = { type: "THEME_PREVIEW", surface, theme: draft };
@@ -218,41 +423,89 @@ function LivePreview({ surface, draft }: { surface: ThemeScope; draft: StoreThem
   );
 
   return (
-    <div>
+    <div
+      className="rounded-[var(--radius-lg)] border border-line/70 p-4"
+      style={{ background: "var(--surface)" }}
+    >
+      {/* Card header: label · device toggle · open in new window */}
+      <div className="flex flex-wrap items-center gap-3">
+        <SectionLabel>Live preview</SectionLabel>
+        {dirty && (
+          <span className="font-mono text-[9px] uppercase tracking-[0.1em] text-accent">
+            unsaved draft
+          </span>
+        )}
+        <div className="ml-auto flex items-center gap-3">
+          <div className="flex rounded-full border border-line/70 p-0.5" style={{ background: "var(--bone)" }}>
+            {(["desktop", "mobile"] as const).map((d) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => setDevice(d)}
+                aria-pressed={device === d}
+                className="rounded-full px-3 py-1 font-mono text-[10px] uppercase tracking-[0.08em] transition-all"
+                style={{
+                  background: device === d ? "var(--accent)" : "transparent",
+                  color: device === d ? "var(--accent-ink)" : "var(--ink-soft)",
+                }}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={openFullPreview}
+            className="font-mono text-[10px] uppercase tracking-[0.1em] text-accent transition-opacity hover:opacity-75"
+          >
+            Open ↗
+          </button>
+        </div>
+      </div>
+
       <div
         ref={boxRef}
-        className="relative overflow-hidden rounded-[var(--radius-lg)] border border-line bg-bone"
+        className="relative mt-3 overflow-hidden rounded-[var(--radius-md)] border border-line bg-bone"
         style={{ height: FRAME_H * scale }}
       >
-      {/* Absolutely positioned so the frame's unscaled 1280px layout width
-          never propagates into the page (transform only scales visually).
-          Fully interactive: scroll, click, and navigate inside the preview.
-          Client-side navigations keep the injected draft (the iframe's React
-          state survives); hard loads re-fire onLoad, which re-posts it. */}
-      <iframe
-        ref={frameRef}
-        src={surface === "store" ? "/store" : "/admin"}
-        title={surface === "store" ? "Storefront preview" : "Admin panel preview"}
-        onLoad={() => {
-          setLoaded(true);
-          post();
-        }}
-        className="absolute left-0 top-0 origin-top-left border-0"
-        style={{ width: FRAME_W, height: FRAME_H, transform: `scale(${scale})` }}
-      />
+        {/* Absolutely positioned so the frame's unscaled layout width never
+            propagates into the page (transform only scales visually). Fully
+            interactive: scroll, click, and navigate inside the preview.
+            Client-side navigations keep the injected draft (the iframe's
+            React state survives); hard loads re-fire onLoad → re-post. */}
+        <iframe
+          ref={frameRef}
+          src={surface === "store" ? "/store" : "/admin"}
+          title={surface === "store" ? "Storefront preview" : "Admin panel preview"}
+          onLoad={() => {
+            setLoaded(true);
+            post();
+          }}
+          className="absolute top-0 origin-top-left border-0"
+          style={{
+            width: FRAME_W,
+            height: FRAME_H,
+            transform: `scale(${scale})`,
+            left: Math.max(0, (boxW - FRAME_W * scale) / 2),
+          }}
+        />
       </div>
-      <button
-        type="button"
-        onClick={openFullPreview}
-        className="mt-2 font-mono text-[11px] uppercase tracking-[0.1em] text-accent transition-opacity hover:opacity-75"
-      >
-        Open in new window ↗
-      </button>
+
       {popupBlocked && (
-        <p className="mt-1 text-[12px] text-danger">
+        <p className="mt-2 text-[12px] text-danger">
           The browser blocked the preview window — allow pop-ups for this site and try again.
         </p>
       )}
+
+      <p className="mt-3 text-[12px] leading-relaxed text-ink-soft">
+        This is the real {surface === "store" ? "storefront" : "dashboard"} rendered with your
+        draft — it follows you as you scroll. Nothing applies to the live{" "}
+        {surface === "store" ? "store" : "dashboard"} until you save. Saved to{" "}
+        <code className="font-mono text-ink">
+          {surface === "store" ? "organization.settings.theme" : "organization.settings.adminTheme"}
+        </code>
+        .
+      </p>
     </div>
   );
 }
@@ -274,6 +527,7 @@ export function ThemeCustomizer() {
   });
 
   const [scope, setScope] = useState<ThemeScope>("store");
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const savedByScope: Record<ThemeScope, StoreThemeConfig> = useMemo(
     () => ({
@@ -351,7 +605,7 @@ export function ThemeCustomizer() {
           : "Your own dashboard's look — customers never see this. Applies to everyone on your staff."}
       </p>
 
-      <div className="mt-6 grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(300px,420px)]">
+      <div className="mt-6 grid gap-8 min-[1100px]:grid-cols-[minmax(0,960px)_460px]">
         <div className="space-y-8">
           {settingsQuery.isError && (
             <p className="rounded-[var(--radius-md)] border border-line bg-surface px-4 py-3 text-[13px] text-ink-soft">
@@ -363,53 +617,44 @@ export function ThemeCustomizer() {
           {/* Presets */}
           <div>
             <SectionLabel>Start from a preset</SectionLabel>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {STYLE_PRESETS.map((p) => (
-                <button
+                <PremiumPresetCard
                   key={p.name}
-                  type="button"
-                  onClick={() => applyPreset(p.theme)}
-                  title={p.note}
-                  className="flex items-center gap-2 rounded-full border border-line px-4 py-2 text-[12px] text-ink transition-colors hover:border-accent"
-                >
-                  {p.theme.background && (
-                    <span
-                      className="size-3 rounded-full"
-                      style={{ background: p.theme.background, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.15)" }}
-                    />
-                  )}
-                  <span className="size-3 rounded-full" style={{ background: p.theme.accent }} />
-                  <span className="size-3 rounded-full" style={{ background: p.theme.secondary }} />
-                  {p.name}
-                </button>
-              ))}
-            </div>
-            <p className="mt-2 text-[12px] text-ink-soft">
-              Presets set colours, type, and surface treatment — your layout choices stay put.
-            </p>
-            <div className="mt-3 flex items-center gap-2.5">
-              {ACCENT_SWATCHES.map((s) => (
-                <button
-                  key={s.name}
-                  type="button"
-                  onClick={() => {
-                    set("accent", s.accent);
-                    set("accentSoft", s.accentSoft);
-                  }}
-                  aria-label={`Accent ${s.name}`}
-                  title={s.name}
-                  className="size-7 rounded-full transition-transform hover:scale-110"
-                  style={{
-                    background: s.accent,
-                    boxShadow:
-                      draft.accent === s.accent
-                        ? "0 0 0 2px var(--bone), 0 0 0 3.5px var(--ink)"
-                        : "0 0 0 1px rgba(0,0,0,0.1)",
-                  }}
+                  preset={p}
+                  selected={
+                    draft.accent === p.theme.accent &&
+                    draft.background === (p.theme.background ?? draft.background)
+                  }
+                  onSelect={() => applyPreset(p.theme)}
                 />
               ))}
-              <span className="text-[11px] text-ink-soft">quick accents</span>
             </div>
+            {/* Premium presets */}
+            <div className="mt-6">
+              <div className="flex items-baseline gap-3">
+                <SectionLabel>Premium presets</SectionLabel>
+                <span className="text-[12px] italic text-ink-soft">
+                  branded palettes with matched type &amp; surfaces
+                </span>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                {PREMIUM_PRESETS.map((p) => (
+                  <PremiumPresetCard
+                    key={p.name}
+                    preset={p}
+                    selected={
+                      draft.accent === p.theme.accent && draft.background === p.theme.background
+                    }
+                    onSelect={() => applyPreset(p.theme)}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <p className="mt-3 text-[12px] text-ink-soft">
+              Presets set colours, type, and surface treatment — your layout choices stay put.
+            </p>
           </div>
 
           {/* Brand colours */}
@@ -561,7 +806,7 @@ export function ThemeCustomizer() {
           <div>
             <SectionLabel>{scope === "store" ? "Storefront layout" : "Dashboard layout"}</SectionLabel>
             {scope === "store" ? (
-              <div className="mt-3 space-y-4">
+              <div className="mt-3 grid gap-x-8 gap-y-4 sm:grid-cols-2">
                 <div>
                   <span className="mb-2 block text-[12px] text-ink-soft">Header</span>
                   <Segmented
@@ -624,6 +869,78 @@ export function ThemeCustomizer() {
                       (k) => ({ value: k, label: SECTION_SPACINGS[k].label }),
                     )}
                   />
+                </div>
+                <div>
+                  <span className="mb-2 block text-[12px] text-ink-soft">Navigation</span>
+                  <Segmented
+                    ariaLabel="Navigation style"
+                    value={draft.navStyle}
+                    onChange={(v) => set("navStyle", v)}
+                    options={[
+                      { value: "top", label: "Top bar", hint: "links live in the header" },
+                      { value: "sidebar", label: "Sidebar", hint: "hamburger opens a slide-in drawer with shop + CMS page links" },
+                    ]}
+                  />
+                </div>
+                <div>
+                  <span className="mb-2 block text-[12px] text-ink-soft">Card layout</span>
+                  <Segmented
+                    ariaLabel="Card layout"
+                    value={draft.cardLayout}
+                    onChange={(v) => set("cardLayout", v)}
+                    options={[
+                      { value: "vertical", label: "Vertical", hint: "image on top, details below" },
+                      { value: "horizontal", label: "Horizontal", hint: "image beside the details" },
+                      { value: "overlay", label: "Overlay", hint: "details laid over the image" },
+                    ]}
+                  />
+                </div>
+                <div>
+                  <span className="mb-2 block text-[12px] text-ink-soft">Footer</span>
+                  <Segmented
+                    ariaLabel="Footer style"
+                    value={draft.footerStyle}
+                    onChange={(v) => set("footerStyle", v)}
+                    options={[
+                      { value: "columns", label: "Columns", hint: "link columns incl. auto CMS pages" },
+                      { value: "centered", label: "Centered", hint: "stacked wordmark + inline links" },
+                      { value: "minimal", label: "Minimal", hint: "one quiet row" },
+                    ]}
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <span className="mb-2 block text-[12px] text-ink-soft">Motion & browsing</span>
+                  <div className="grid gap-2 sm:grid-cols-3">
+                    <ToggleRow
+                      label="Product slider"
+                      hint="arrivals scroll with arrows + ←/→ keys"
+                      on={draft.productSlider}
+                      onChange={(v) => set("productSlider", v)}
+                    />
+                    <ToggleRow
+                      label="Back to top"
+                      hint="floating button after scrolling"
+                      on={draft.backToTop}
+                      onChange={(v) => set("backToTop", v)}
+                    />
+                    <ToggleRow
+                      label="Smooth scroll"
+                      hint="animated anchor scrolling"
+                      on={draft.smoothScroll}
+                      onChange={(v) => set("smoothScroll", v)}
+                    />
+                  </div>
+                </div>
+                <div className="sm:col-span-2">
+                  <span className="mb-2 block text-[12px] text-ink-soft">Home page builder — order, show, hide</span>
+                  <HomeSectionBuilder
+                    value={(draft.homeSections ?? DEFAULT_HOME_SECTIONS) as HomeSectionKey[]}
+                    onChange={(v) => set("homeSections", v)}
+                  />
+                  <p className="mt-2 text-[12px] text-ink-soft">
+                    The hero always leads; these bands follow in this order. Published CMS pages and blog
+                    posts appear on the storefront automatically (footer, sidebar nav, and the blog band).
+                  </p>
                 </div>
               </div>
             ) : (
@@ -758,36 +1075,37 @@ export function ThemeCustomizer() {
           </div>
         </div>
 
-        {/* Live preview */}
-        <div className="xl:sticky xl:top-6 xl:self-start">
-          <div className="flex items-baseline justify-between">
-            <SectionLabel>Live preview</SectionLabel>
-            {dirty && (
-              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-accent">
-                previewing unsaved draft
-              </span>
-            )}
-          </div>
-          <div className="mt-3">
+        {/* Live preview — sticky right rail on wide viewports */}
+        <div className="hidden min-[1100px]:block">
+          <div style={{ position: "sticky", top: 20 }}>
             {/* Keyed by scope so switching surfaces reloads the right page. */}
-            <LivePreview key={scope} surface={scope} draft={draft} />
+            <LivePreview key={scope} surface={scope} draft={draft} dirty={dirty} />
           </div>
-          <p className="mt-3 text-[12px] leading-relaxed text-ink-soft">
-            This is the real {scope === "store" ? "storefront" : "dashboard"} rendered with your
-            draft — scroll, click, and browse pages inside it; the draft follows you. Nothing
-            applies to the live {scope === "store" ? "store" : "dashboard"} until you save.{" "}
-            {scope === "store" ? (
-              <>
-                Saved to <code className="font-mono text-ink">organization.settings.theme</code>.
-              </>
-            ) : (
-              <>
-                Saved to <code className="font-mono text-ink">organization.settings.adminTheme</code>{" "}
-                — staff-only, never served to the storefront.
-              </>
-            )}
-          </p>
         </div>
+      </div>
+
+      {/* Under ~1100px the preview docks as a collapsible bottom sheet. */}
+      <div className="fixed inset-x-0 bottom-0 z-40 min-[1100px]:hidden">
+        {sheetOpen && (
+          <div
+            className="max-h-[70vh] overflow-y-auto border-t border-line/70 px-4 pb-4 pt-3 shadow-[0_-8px_32px_rgba(0,0,0,0.18)]"
+            style={{ background: "var(--bone)" }}
+          >
+            <LivePreview key={`sheet-${scope}`} surface={scope} draft={draft} dirty={dirty} />
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() => setSheetOpen((o) => !o)}
+          aria-expanded={sheetOpen}
+          className="flex w-full items-center justify-center gap-2 border-t border-line/70 py-3 font-mono text-[11px] uppercase tracking-[0.14em] text-ink"
+          style={{ background: "var(--surface)" }}
+        >
+          Live preview {sheetOpen ? "▾" : "▴"}
+          {dirty && !sheetOpen && (
+            <span className="size-1.5 rounded-full" style={{ background: "var(--accent)" }} />
+          )}
+        </button>
       </div>
     </div>
   );

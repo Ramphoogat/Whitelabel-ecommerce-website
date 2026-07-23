@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { registerCustomer } from "@/lib/api/auth.api";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/stores/auth-store";
+import { SocialSignIn } from "./social-signin";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -89,6 +90,8 @@ export function RegisterForm() {
       >
         {mutation.isPending ? "Creating account…" : "Create account"}
       </button>
+
+      <SocialSignIn />
     </form>
   );
 }

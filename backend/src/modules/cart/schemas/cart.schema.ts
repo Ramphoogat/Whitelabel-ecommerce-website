@@ -24,12 +24,12 @@ export type CartDocument = HydratedDocument<Cart>;
 @Schema({ timestamps: true, collection: 'carts' })
 export class Cart extends Document {
   // Present when the cart belongs to a logged-in customer.
-  @Prop({ type: Types.ObjectId, ref: 'Customer', default: null, index: true })
+  @Prop({ type: Types.ObjectId, ref: 'Customer', default: null })
   customerId!: Types.ObjectId | null;
 
   // Present for guest carts — a random opaque token kept in a cookie/header
   // on the storefront. Exactly one of customerId/guestToken is set.
-  @Prop({ type: String, default: null, index: true })
+  @Prop({ type: String, default: null })
   guestToken!: string | null;
 
   @Prop({ type: [CartItemSchema], default: [] })

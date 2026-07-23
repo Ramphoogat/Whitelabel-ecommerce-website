@@ -4,6 +4,7 @@ export interface JwtStaffPayload {
   sub: string; // userId
   email: string;
   role: UserRole;
+  allowedSections: string[] | null;
 }
 
 export interface JwtCustomerPayload {

@@ -78,6 +78,31 @@ export class ThemeSettings {
   @Prop({ default: 'regular', enum: ['airy', 'regular', 'dense'] })
   sectionSpacing!: string;
 
+  @Prop({ default: 'top', enum: ['top', 'sidebar'] })
+  navStyle!: string;
+
+  @Prop({ default: 'vertical', enum: ['vertical', 'horizontal', 'overlay'] })
+  cardLayout!: string;
+
+  @Prop({ default: 'columns', enum: ['columns', 'centered', 'minimal'] })
+  footerStyle!: string;
+
+  /** Ordered, toggleable home-page sections; unknown keys are ignored by the storefront. */
+  @Prop({
+    type: [String],
+    default: ['categories', 'arrivals', 'campaign', 'values', 'testimonials', 'collection', 'blog'],
+  })
+  homeSections!: string[];
+
+  @Prop({ default: false })
+  productSlider!: boolean;
+
+  @Prop({ default: true })
+  backToTop!: boolean;
+
+  @Prop({ default: true })
+  smoothScroll!: boolean;
+
   // ---- Structural: admin panel ----
   @Prop({ default: 'expanded', enum: ['expanded', 'compact', 'rail'] })
   sidebarStyle!: string;

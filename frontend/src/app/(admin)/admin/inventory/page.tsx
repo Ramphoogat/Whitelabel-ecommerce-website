@@ -3,6 +3,7 @@
 import { AdminTopbar } from "@/components/admin/topbar";
 import { useAdminInventory, useAdminProducts, useAdminTaxRates } from "@/hooks/use-admin-data";
 import { SkeletonTable } from "@/components/ui/skeleton";
+import { Pagination, usePagination } from "@/components/admin/pagination";
 import { formatPrice } from "@/lib/data/products";
 import type { AdminApiTaxRate } from "@/lib/api/admin.api";
 
@@ -29,6 +30,10 @@ export default function AdminInventoryPage() {
 
   // SKU → price lookup from products list
   const priceMap = new Map(products.map((p) => [p.sku, p.price]));
+
+  const realPager = usePagination(inventory);
+  const fallbackPager = usePagination(fallback ?? []);
+  const pager = usingRealData ? realPager : fallbackPager;
 
   return (
     <>
@@ -58,7 +63,7 @@ export default function AdminInventoryPage() {
               {isLoading && <SkeletonTable rows={8} cols={9} />}
 
               {usingRealData &&
-                inventory.map((row) => {
+                realPager.pageItems.map((row) => {
                   const low = row.availableQuantity <= row.lowStockThreshold;
                   const basePrice = priceMap.get(row.sku) ?? null;
                   const taxedPrice = basePrice !== null ? applyTax(basePrice, taxRates) : null;
@@ -94,7 +99,7 @@ export default function AdminInventoryPage() {
                 })}
 
               {!usingRealData && !isLoading &&
-                fallback?.map((row) => {
+                fallbackPager.pageItems.map((row) => {
                   const available = row.onHand - row.reserved;
                   const low = available <= row.reorderPoint;
                   const basePrice = priceMap.get(row.sku) ?? null;
@@ -129,6 +134,14 @@ export default function AdminInventoryPage() {
                 })}
             </tbody>
           </table>
+          <Pagination
+            page={pager.page}
+            pageCount={pager.pageCount}
+            total={pager.total}
+            pageSize={pager.pageSize}
+            onPage={pager.setPage}
+            label="SKUs"
+          />
         </div>
       </div>
     </>

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { AdminTopbar } from "@/components/admin/topbar";
 import { useAdminCustomers } from "@/hooks/use-admin-data";
 import { SkeletonTable } from "@/components/ui/skeleton";
+import { Pagination, usePagination } from "@/components/admin/pagination";
 import { formatPrice } from "@/lib/data/products";
 import { CUSTOMERS } from "@/lib/data/admin-customers";
 
@@ -103,6 +104,10 @@ export default function AdminCustomersPage() {
 
   const spendKey: keyof typeof CUSTOMERS[0] = `spend${spendPeriod.charAt(0).toUpperCase() + spendPeriod.slice(1)}` as keyof typeof CUSTOMERS[0];
 
+  const realPager = usePagination(customers);
+  const fallbackPager = usePagination(CUSTOMERS);
+  const pager = usingRealData ? realPager : fallbackPager;
+
   return (
     <>
       <AdminTopbar title="Customers" />
@@ -129,7 +134,7 @@ export default function AdminCustomersPage() {
               {isLoading && <SkeletonTable rows={6} cols={6} />}
 
               {usingRealData &&
-                customers.map((c) => (
+                realPager.pageItems.map((c) => (
                   <tr key={c._id} className="border-b border-line/50 last:border-0 hover:bg-bone/60">
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
@@ -153,7 +158,7 @@ export default function AdminCustomersPage() {
 
               {/* Demo fallback */}
               {!usingRealData && !isLoading &&
-                CUSTOMERS.map((c) => (
+                fallbackPager.pageItems.map((c) => (
                   <tr key={c.id} className="border-b border-line/50 last:border-0 hover:bg-bone/60">
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-3">
@@ -181,6 +186,14 @@ export default function AdminCustomersPage() {
                 ))}
             </tbody>
           </table>
+          <Pagination
+            page={pager.page}
+            pageCount={pager.pageCount}
+            total={pager.total}
+            pageSize={pager.pageSize}
+            onPage={pager.setPage}
+            label="customers"
+          />
         </div>
       </div>
     </>

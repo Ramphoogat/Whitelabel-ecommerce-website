@@ -20,6 +20,16 @@ export function loginCustomer(input: { email: string; password: string }) {
   });
 }
 
+export type SocialProvider = "google" | "apple" | "facebook";
+
+/** Third-party sign-in — creates the customer on first use, records the provider. */
+export function socialLoginCustomer(input: { provider: SocialProvider; email: string; name: string }) {
+  return apiRequest<CustomerAuthResponse>("/auth/customer/social", {
+    method: "POST",
+    body: input,
+  });
+}
+
 export function logoutCustomer(refreshToken: string) {
   return apiRequest<{ success: boolean }>("/auth/customer/logout", {
     method: "POST",

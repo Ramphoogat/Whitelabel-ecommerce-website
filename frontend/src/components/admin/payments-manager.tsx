@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { GATEWAY_CONFIGS, ALL_MODES, type GatewayConfig, type PaymentMode } from "@/lib/data/admin-payments";
 import { Modal } from "./modal";
+import { Pagination, usePagination } from "./pagination";
 
 /* ── helpers ── */
 const MODE_META: Record<PaymentMode, { label: string; bg: string; color: string }> = {
@@ -403,6 +404,8 @@ export function PaymentsManager() {
     return a.priority - b.priority;
   });
 
+  const { pageItems, page, pageCount, setPage, total, pageSize } = usePagination(sorted);
+
   return (
     <div className="space-y-6">
 
@@ -474,7 +477,7 @@ export function PaymentsManager() {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((g) => (
+            {pageItems.map((g) => (
               <tr
                 key={g.provider}
                 className="border-b border-line/50 last:border-0 transition-colors hover:bg-bone/40"
@@ -542,6 +545,7 @@ export function PaymentsManager() {
             ))}
           </tbody>
         </table>
+        <Pagination page={page} pageCount={pageCount} total={total} pageSize={pageSize} onPage={setPage} label="gateways" />
       </div>
 
       {/* Mode coverage map */}

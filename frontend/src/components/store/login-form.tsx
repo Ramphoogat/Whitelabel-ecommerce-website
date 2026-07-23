@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import { loginCustomer } from "@/lib/api/auth.api";
 import { ApiError } from "@/lib/api/client";
 import { useAuthStore } from "@/stores/auth-store";
+import { SocialSignIn } from "./social-signin";
 
 export function LoginForm() {
   const router = useRouter();
@@ -73,6 +74,8 @@ export function LoginForm() {
       >
         {mutation.isPending ? "Signing in…" : "Sign in"}
       </button>
+
+      <SocialSignIn />
     </form>
   );
 }

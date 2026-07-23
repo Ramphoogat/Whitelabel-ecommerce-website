@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import helmet from 'helmet';
-import compression from 'compression';
+import * as compression from 'compression';
 
 export function setupSecurity(app: INestApplication, corsOrigin: string): void {
   app.use(helmet());

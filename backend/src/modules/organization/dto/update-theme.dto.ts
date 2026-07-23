@@ -1,5 +1,17 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsIn, IsOptional, IsString, Matches } from 'class-validator';
+import { IsArray, IsBoolean, IsIn, IsOptional, IsString, Matches } from 'class-validator';
+
+const FONT_KEYS = ['grotesk', 'inter', 'plexmono', 'system', 'serif', 'cormorant', 'playfair', 'fraunces'];
+
+const HOME_SECTION_KEYS = [
+  'categories',
+  'arrivals',
+  'campaign',
+  'values',
+  'testimonials',
+  'collection',
+  'blog',
+];
 
 const HEX_COLOR = /^#[0-9a-fA-F]{6}$/;
 const HEX_MESSAGE = 'must be a 6-digit hex colour like #4b9ec4';
@@ -58,14 +70,14 @@ export class UpdateThemeDto {
   line?: string;
 
   // Typography
-  @ApiPropertyOptional({ example: 'grotesk', enum: ['grotesk', 'inter', 'plexmono', 'system', 'serif'] })
+  @ApiPropertyOptional({ example: 'grotesk', enum: FONT_KEYS })
   @IsOptional()
-  @IsIn(['grotesk', 'inter', 'plexmono', 'system', 'serif'])
+  @IsIn(FONT_KEYS)
   fontDisplay?: string;
 
-  @ApiPropertyOptional({ example: 'inter', enum: ['grotesk', 'inter', 'plexmono', 'system', 'serif'] })
+  @ApiPropertyOptional({ example: 'inter', enum: FONT_KEYS })
   @IsOptional()
-  @IsIn(['grotesk', 'inter', 'plexmono', 'system', 'serif'])
+  @IsIn(FONT_KEYS)
   fontBody?: string;
 
   @ApiPropertyOptional({ example: 'plexmono', enum: ['plexmono', 'sysmono'] })
@@ -114,6 +126,42 @@ export class UpdateThemeDto {
   @IsOptional()
   @IsIn(['airy', 'regular', 'dense'])
   sectionSpacing?: string;
+
+  @ApiPropertyOptional({ example: 'top', enum: ['top', 'sidebar'] })
+  @IsOptional()
+  @IsIn(['top', 'sidebar'])
+  navStyle?: string;
+
+  @ApiPropertyOptional({ example: 'vertical', enum: ['vertical', 'horizontal', 'overlay'] })
+  @IsOptional()
+  @IsIn(['vertical', 'horizontal', 'overlay'])
+  cardLayout?: string;
+
+  @ApiPropertyOptional({ example: 'columns', enum: ['columns', 'centered', 'minimal'] })
+  @IsOptional()
+  @IsIn(['columns', 'centered', 'minimal'])
+  footerStyle?: string;
+
+  @ApiPropertyOptional({ example: ['categories', 'arrivals', 'collection'], enum: HOME_SECTION_KEYS, isArray: true })
+  @IsOptional()
+  @IsArray()
+  @IsIn(HOME_SECTION_KEYS, { each: true })
+  homeSections?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  productSlider?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  backToTop?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  smoothScroll?: boolean;
 
   // Structural: admin panel
   @ApiPropertyOptional({ example: 'expanded', enum: ['expanded', 'compact', 'rail'] })
