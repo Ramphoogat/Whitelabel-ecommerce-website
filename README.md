@@ -1,242 +1,194 @@
-# White-Label E-Commerce Platform
+<div align="center">
+
+# Shoplux
+
+**A white-label, multi-tenant e-commerce platform built for rapid deployment and deep customization.**
+
+![Next.js](https://img.shields.io/badge/Next.js_15-black?style=flat-square&logo=next.js)
+![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=flat-square&logo=nestjs&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-DC382D?style=flat-square&logo=redis&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+
+One codebase. Any store. Ship in minutes.
+
+</div>
+
+---
+
+## What Is Shoplux?
+
+Shoplux is a production-ready, white-label e-commerce platform. Deploy it as a fashion boutique, electronics store, grocery shop, or anything else — the entire look, feel, and branding changes via a single environment variable and the built-in Theme Studio, without touching code.
+
+It ships with three surfaces in one monorepo:
+
+| Surface | URL | Purpose |
+|---|---|---|
+| **Customer Storefront** | `/store` | Public shopping experience |
+| **Admin Dashboard** | `/admin` | Full store management |
+| **Staff Portal** | `/staff-login` | Role-gated team access |
+
+---
 
 ## Tech Stack
 
 ### Backend
-- **Runtime:** Node.js
-- **Framework:** NestJS (TypeScript)
-- **Database:** MongoDB (via Mongoose)
-- **Cache / Queue Broker:** Redis + BullMQ
-- **Auth:** JWT (access + refresh tokens), Argon2 password hashing
-- **API Docs:** Swagger / OpenAPI
-- **Storage:** S3-compatible (AWS S3, Cloudflare R2, MinIO, Contabo, Zata)
-- **Email:** Nodemailer / Handlebars templates
-- **Security:** Helmet, CORS, Throttler (rate-limiting), AES-256-GCM credential encryption
+| Layer | Technology |
+|---|---|
+| Runtime | Node.js 18+ |
+| Framework | NestJS (TypeScript) |
+| Database | MongoDB via Mongoose |
+| Cache & Queues | Redis + BullMQ |
+| Auth | JWT (access + refresh rotation), Argon2id |
+| Storage | S3-compatible (AWS S3, Cloudflare R2, MinIO, Contabo) |
+| Email | Nodemailer + Handlebars templates |
+| Security | Helmet, CORS, rate-limiting, AES-256-GCM credential encryption |
+| API Docs | Swagger / OpenAPI at `/api/docs` |
 
 ### Frontend
-- **Framework:** Next.js 15 (App Router, TypeScript)
-- **Styling:** Tailwind CSS
-- **State Management:** Zustand
-- **Data Fetching:** TanStack React Query
-- **3D / Animations:** Three.js, @react-three/fiber, @react-three/drei
-- **Theme System:** CSS custom properties + live Theme Studio
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 App Router (TypeScript) |
+| Styling | Tailwind CSS + CSS custom properties |
+| State | Zustand (persisted) |
+| Data Fetching | TanStack React Query |
+| 3D | Three.js + @react-three/fiber |
+| Fonts | Cormorant Garamond, Playfair Display, Fraunces, DM Sans, Space Mono via next/font |
+| Theme | CSS variables + live Theme Studio with postMessage iframe preview |
 
 ---
 
-## What Is This?
-
-A **white-label, multi-tenant e-commerce platform** that can be deployed as any type of online store (fashion, electronics, furniture, etc.) by changing a single environment variable. It ships with a full customer-facing storefront, a complete admin dashboard, and a headless REST API — all in one monorepo.
-
-## What It Can Do
+## Feature Overview
 
 ### Storefront (Customer-Facing)
-- Browse a product catalogue with search, filtering, and pagination
-- View detailed product pages with image galleries
-- Add items to a persistent cart (guest + authenticated)
-- Full checkout flow with address, shipping method, coupon, and payment selection
-- Order confirmation and account order history
-- Customer registration, login, and profile management
-- Real-time promotional banners and CMS-driven content pages
+- Product catalogue with search, filters, and category browsing
+- Product detail pages with image galleries and variant pickers
+- Persistent cart (guest + authenticated) with drawer UI
+- Full checkout flow — address, shipping, coupon, payment
+- Order history and account management
+- Separate customer login / register with social sign-in (Google, Apple, Facebook)
+- CMS-driven content pages and blog
+- Dynamically themed via live Theme Studio — no redeploy needed
 
 ### Admin Dashboard
-- **Dashboard** — revenue charts, stat tiles, and key business metrics
-- **Products** — create, edit, and delete products with variants, images, and SEO fields
-- **Orders** — view, filter, and manage orders; update order status; click any row to expand inline customer address + visual order progress tracker
-- **Inventory** — stock levels, low-stock alerts, and adjustments
-- **Customers** — list, search, and inspect customer records
-- **Marketing** — coupon codes (percentage / fixed / free-shipping), promotional banners
-- **CMS** — manage content pages (About, FAQs, etc.)
-- **Payments** — enable/disable payment gateways per-org; view transaction history
-- **Shipping** — configure shipping zones and rates
-- **Tax** — define tax rules by region
-- **Currency** — multi-currency support with exchange rates
-- **Analytics** — sales, revenue, and traffic reports
-- **Settings** — store identity, branding (General); Organization (business type, legal name, GST/Tax ID, address, regional settings, social links); Notifications; Theme
-- **Theme Studio** — live preview dual-surface (store + admin) theme customizer with color presets; sidebar auto-compacts when Theme tab is open
+- **Dashboard** — revenue charts, KPI stat tiles, recent orders
+- **Products** — create, edit, archive products with variants, images, and SEO fields
+- **Orders** — manage orders, update status, expand any row to see customer address + visual order progress tracker
+- **Inventory** — stock levels, low-stock alerts, manual adjustments
+- **Customers** — list, search, inspect customer records; view social sign-in provider
+- **Staff** — add/remove team members, assign roles (owner / admin / staff), configure per-section sidebar access, disable accounts
+- **Marketing** — coupon codes (%, fixed, free shipping) + promotional banners with image upload
+- **CMS** — manage content pages and blog posts
+- **Payments** — enable/disable payment gateways, view transaction history
+- **Shipping** — zones and rates configuration
+- **Tax** — tax rules by region with checkout integration
+- **Currency** — multi-currency exchange rates
+- **Analytics** — revenue, order, and traffic reports with date range switcher
+- **Wallet** — collected funds ledger, payout accounts, withdrawal flow, live exchange rate ticker
+- **Settings** — store identity, organization details, notifications, theme
+
+### Theme Studio
+- **Dual-surface themes** — storefront and admin panel themed independently
+- **10 palette tokens** — live colour pickers with hex input; changes propagate instantly
+- **Typography** — display/body/mono font pickers, type scale, heading scale, corner style
+- **Storefront layout** — nav style (standard/sidebar drawer), card layout, footer variant, home section builder with drag-reorder, product slider, back-to-top, smooth scroll
+- **8 premium presets** — Noir Atelier, Ivory & Gold, Emerald Estate, Sapphire Maison, Bordeaux, Onyx Rosé, Café Crème, Terra Atelier
+- **Sticky preview rail** — live 1280px iframe (real site, real interactions) pinned alongside controls; mobile-friendly bottom-sheet fallback
+- **WCAG contrast guardrails** — inline warnings with ratios when pairs fail AA
+
+### Staff Access Control
+- Admins pick which sidebar sections each staff member can open
+- Restricted sections render as dimmed, non-clickable nav items
+- Access config stored in the user document and baked into the JWT — no extra round-trips
 
 ### Platform / API
-- **Multi-tenancy** — each organisation gets isolated data via org-scoped queries
-- **Background jobs** — checkout expiry, coupon expiry, stock reconciliation, notification delivery
-- **Notifications** — email and SMS delivery via BullMQ queues
-- **Media management** — upload images to any S3-compatible provider
-- **Health checks** — `/health` endpoint covering DB, Redis, and storage
-- **Audit log** — admin action trail
-- **Scheduled tasks** — cron-based maintenance jobs
-- **Swagger UI** — full interactive API documentation at `/api/docs`
+- Multi-tenancy — org-scoped data isolation
+- Background jobs — checkout expiry, coupon expiry, stock reconciliation
+- Email and SMS notifications via BullMQ
+- S3-compatible media upload with image resize pipeline (full / md / thumb WebP variants)
+- Full-text product search + autocomplete
+- Health check endpoint covering DB, Redis, and storage
+- Audit log for all admin actions
+- Swagger UI — interactive API docs at `/api/docs`
 
 ---
 
-## Folder Structure
+## Project Structure
 
 ```
-e-commerce/
-├── README.md                          ← you are here
-├── backend/                           ← NestJS API
-│   ├── src/
-│   │   ├── main.ts                    ← entry point
-│   │   ├── app.module.ts              ← root module
-│   │   ├── bootstrap/                 ← app setup (DB, security, Swagger, validation)
-│   │   │   ├── database.bootstrap.ts
-│   │   │   ├── security.bootstrap.ts
-│   │   │   ├── swagger.bootstrap.ts
-│   │   │   └── validation.bootstrap.ts
-│   │   ├── config/                    ← typed config factories
-│   │   │   ├── app.config.ts
-│   │   │   ├── database.config.ts
-│   │   │   ├── env.validation.ts
-│   │   │   ├── queue.config.ts
-│   │   │   ├── redis.config.ts
-│   │   │   ├── security.config.ts
-│   │   │   ├── shipping-origin.config.ts
-│   │   │   └── storage.config.ts
-│   │   ├── modules/
-│   │   │   ├── analytics/             ← sales & traffic reports
-│   │   │   ├── audit/                 ← admin action audit log
-│   │   │   ├── cart/                  ← guest & authenticated cart
-│   │   │   ├── catalog/               ← products, categories, variants
-│   │   │   ├── cms/                   ← content pages & blocks
-│   │   │   ├── currency/              ← multi-currency & exchange rates
-│   │   │   ├── customer/              ← customer accounts & auth
-│   │   │   ├── health/                ← health-check endpoint
-│   │   │   ├── identity/              ← staff/admin identity & JWT
-│   │   │   ├── inventory/             ← stock levels & adjustments
-│   │   │   ├── marketing/             ← coupons & banners
-│   │   │   ├── media/                 ← file upload to S3-compatible storage
-│   │   │   ├── notification/          ← email & SMS via BullMQ
-│   │   │   ├── order/                 ← checkout flow & order management
-│   │   │   ├── organization/          ← multi-tenant org config & theme
-│   │   │   ├── payment/               ← gateway config, webhooks, transactions
-│   │   │   ├── scheduler/             ← cron jobs (coupon expiry, stock sync)
-│   │   │   ├── search/                ← full-text product search
-│   │   │   ├── shipping/              ← zones, rates, carrier integration
-│   │   │   └── tax/                   ← tax rules by region
-│   │   ├── providers/                 ← pluggable external integrations
-│   │   │   ├── cache/                 ← Redis cache provider
-│   │   │   ├── mail/                  ← email provider
-│   │   │   ├── payment/               ← payment gateway adapters
-│   │   │   ├── pdf/                   ← PDF generation
-│   │   │   ├── queue/                 ← BullMQ queue provider
-│   │   │   ├── shipping/              ← carrier rate provider
-│   │   │   ├── sms/                   ← SMS provider
-│   │   │   └── storage/               ← S3-compatible storage provider
-│   │   └── shared/
-│   │       ├── decorators/            ← custom param & role decorators
-│   │       ├── filters/               ← global exception filters
-│   │       ├── guards/                ← JWT & role guards
-│   │       ├── interceptors/          ← logging & transform interceptors
-│   │       ├── interfaces/            ← shared TypeScript interfaces
-│   │       └── utils/                 ← helper functions
-│   ├── seeds/                         ← database seed scripts
-│   ├── test/                          ← e2e test setup
-│   ├── .env.example                   ← environment variable template
-│   ├── nest-cli.json
-│   ├── package.json
-│   └── tsconfig.json
+shoplux/
+├── backend/                        NestJS API
+│   └── src/
+│       ├── bootstrap/              App setup (DB, security, Swagger, validation)
+│       ├── config/                 Typed config factories
+│       ├── modules/
+│       │   ├── analytics/          Sales & traffic reports
+│       │   ├── audit/              Admin action audit log
+│       │   ├── cart/               Guest & authenticated cart
+│       │   ├── catalog/            Products, categories, variants
+│       │   ├── cms/                Content pages & blog posts
+│       │   ├── currency/           Multi-currency & exchange rates
+│       │   ├── customer/           Customer accounts, auth, social login
+│       │   ├── health/             Health-check endpoint
+│       │   ├── identity/           Staff accounts, JWT, roles, access control
+│       │   ├── inventory/          Stock levels & adjustments
+│       │   ├── marketing/          Coupons & banners
+│       │   ├── media/              File upload to S3-compatible storage
+│       │   ├── notification/       Email & SMS via BullMQ
+│       │   ├── order/              Checkout flow & order management
+│       │   ├── organization/       Multi-tenant config & theme
+│       │   ├── payment/            Gateway config, webhooks, transactions
+│       │   ├── scheduler/          Cron jobs (coupon expiry, stock sync)
+│       │   ├── search/             Full-text product search
+│       │   ├── shipping/           Zones, rates, carrier integration
+│       │   └── tax/                Tax rules by region
+│       ├── providers/              Pluggable external integrations
+│       └── shared/                 Guards, decorators, filters, utils
 │
-└── frontend/                          ← Next.js storefront + admin
-    ├── src/
-    │   ├── app/
-    │   │   ├── layout.tsx             ← root layout
-    │   │   ├── globals.css            ← global styles & CSS custom properties
-    │   │   ├── (store)/               ← customer storefront routes
-    │   │   │   ├── page.tsx           ← homepage
-    │   │   │   ├── products/
-    │   │   │   │   ├── page.tsx       ← product listing
-    │   │   │   │   └── [slug]/page.tsx← product detail
-    │   │   │   ├── cart/page.tsx
-    │   │   │   ├── checkout/
-    │   │   │   │   ├── page.tsx
-    │   │   │   │   └── confirmation/page.tsx
-    │   │   │   └── account/page.tsx
-    │   │   ├── (admin)/               ← admin dashboard routes
-    │   │   │   └── admin/
-    │   │   │       ├── page.tsx       ← dashboard
-    │   │   │       ├── products/
-    │   │   │       ├── orders/
-    │   │   │       ├── inventory/
-    │   │   │       ├── customers/
-    │   │   │       ├── marketing/
-    │   │   │       ├── cms/
-    │   │   │       ├── payments/
-    │   │   │       ├── shipping/
-    │   │   │       ├── tax/
-    │   │   │       ├── currency/
-    │   │   │       ├── analytics/
-    │   │   │       └── settings/
-    │   │   └── (auth)/                ← auth routes
-    │   │       ├── login/page.tsx
-    │   │       ├── register/page.tsx
-    │   │       └── staff-login/page.tsx
-    │   ├── components/
-    │   │   ├── admin/                 ← admin UI components
-    │   │   │   ├── sidebar.tsx
-    │   │   │   ├── topbar.tsx
-    │   │   │   ├── stat-tile.tsx
-    │   │   │   ├── revenue-chart.tsx
-    │   │   │   ├── products-table.tsx
-    │   │   │   ├── orders-table.tsx
-    │   │   │   ├── product-form.tsx
-    │   │   │   ├── theme-customizer.tsx
-    │   │   │   ├── cms-manager.tsx
-    │   │   │   └── marketing-manager.tsx
-    │   │   ├── store/                 ← storefront components
-    │   │   │   ├── header.tsx
-    │   │   │   ├── footer.tsx
-    │   │   │   ├── hero.tsx
-    │   │   │   ├── product-card.tsx
-    │   │   │   ├── product-grids.tsx
-    │   │   │   ├── product-detail.tsx
-    │   │   │   ├── cart-drawer.tsx
-    │   │   │   └── checkout-form.tsx
-    │   │   ├── theme/                 ← theme provider & scoping
-    │   │   │   ├── theme-provider.tsx
-    │   │   │   └── store-theme-scope.tsx
-    │   │   ├── providers/
-    │   │   │   └── query-provider.tsx ← TanStack Query setup
-    │   │   └── ui/                    ← shared primitives (skeleton, toaster, pagination)
-    │   ├── stores/                    ← Zustand state stores
-    │   │   ├── auth-store.ts          ← customer auth state
-    │   │   ├── staff-store.ts         ← admin staff auth state
-    │   │   ├── cart-store.ts          ← cart state
-    │   │   ├── toast-store.ts         ← notification toasts
-    │   │   └── ui-store.ts            ← UI state (drawers, modals)
-    │   ├── hooks/
-    │   │   ├── use-catalog.ts         ← product & category data hooks
-    │   │   └── use-admin-data.ts      ← admin dashboard data hooks
-    │   └── lib/
-    │       ├── api/                   ← API client functions
-    │       │   ├── client.ts          ← base fetch client
-    │       │   ├── auth.api.ts
-    │       │   ├── catalog.api.ts
-    │       │   ├── admin.api.ts
-    │       │   └── organization.api.ts
-    │       ├── data/                  ← data-mapping & static data helpers
-    │       └── theme/                 ← theme types, presets & contrast utils
-    ├── public/                        ← static assets
-    ├── next.config.ts
-    ├── package.json
-    └── tsconfig.json
+└── frontend/                       Next.js 15 storefront + admin
+    └── src/
+        ├── app/
+        │   ├── (store)/            Customer storefront routes
+        │   ├── (admin)/admin/      Admin dashboard routes
+        │   ├── (auth)/             Auth routes (login, register, staff-login)
+        │   └── (landingpage)/      Shoplux marketing site
+        ├── components/
+        │   ├── admin/              Admin UI components
+        │   ├── store/              Storefront components
+        │   ├── marketing/          Landing page components
+        │   └── ui/                 Shared primitives (skeleton, toaster, pagination)
+        ├── stores/                 Zustand state stores
+        ├── lib/
+        │   ├── api/                API client functions
+        │   ├── data/               Data helpers & mock data
+        │   └── theme/              Theme types, presets & contrast utils
+        └── hooks/                  Data-fetching hooks
 ```
 
 ---
 
-## Prerequisites
+## Quick Start
 
+### Prerequisites
 - Node.js 18+
 - MongoDB (local or Atlas)
 - Redis (local or managed)
 
----
+### 1. Clone & install
 
-## Environment Setup
+```bash
+git clone https://github.com/Ramphoogat/Whitelabel-ecommerce-website.git
+cd Whitelabel-ecommerce-website
+```
 
-Copy the backend example env file and fill in your values:
+### 2. Configure the backend
 
 ```bash
 cp backend/.env.example backend/.env
 ```
 
-Key variables to set:
+Key variables:
 
 | Variable | Description |
 |---|---|
@@ -250,72 +202,101 @@ Key variables to set:
 | `STORE_NAME` | Display name of the store |
 | `BUSINESS_TYPE` | e.g. `fashion`, `electronics`, `furniture` |
 
-For the frontend create `frontend/.env.local`:
+### 3. Configure the frontend
 
-```env
+```bash
+# frontend/.env.local
 NEXT_PUBLIC_API_URL=http://localhost:4000/api
 ```
 
----
-
-## Running the Backend
+### 4. Run the backend
 
 ```bash
 cd backend
 npm install
-
-# Development (watch mode)
-npm run start:dev
-
-# Production
 npm run build
-npm run start:prod
+npm run start        # production
+# or
+npm run start:dev    # watch mode
 ```
 
-The API will be available at `http://localhost:4000/api`.  
-Swagger docs are at `http://localhost:4000/api/docs`.
-
-### Seed the database (optional)
+Seed demo data (run once):
 
 ```bash
 npm run seed
 ```
 
----
-
-## Running the Frontend
+### 5. Run the frontend
 
 ```bash
 cd frontend
 npm install
-
-# Development
 npm run dev
-
-# Production
-npm run build
-npm run start
 ```
 
-The storefront will be available at `http://localhost:3000`.  
-The admin dashboard is at `http://localhost:3000/admin`.  
-Staff login is at `http://localhost:3000/staff-login`.
+| URL | Surface |
+|---|---|
+| `http://localhost:3000/store` | Customer storefront |
+| `http://localhost:3000/admin` | Admin dashboard |
+| `http://localhost:3000/staff-login` | Staff login |
+| `http://localhost:4000/api/docs` | Swagger API docs |
+
+> **Tip:** The frontend falls back to demo/mock data when the backend is unreachable. Click "Explore in demo mode" on the staff login page to browse the full admin panel without a running backend.
 
 ---
 
-## API Overview
+## API Reference
 
-All endpoints are prefixed with `/api` and documented in Swagger.
+All endpoints are prefixed with `/api` and fully documented in Swagger at `/api/docs`.
 
 | Prefix | Description |
 |---|---|
-| `/api/auth` | Staff login, refresh token |
-| `/api/customer/auth` | Customer register, login |
+| `/api/auth` | Staff login, refresh, logout |
+| `/api/auth/customer` | Customer register, login, social login, refresh |
 | `/api/catalog` | Products & categories (public) |
-| `/api/search` | Full-text product search |
+| `/api/search` | Full-text search + autocomplete |
 | `/api/cart` | Guest & authenticated cart |
-| `/api/checkout` | Checkout session & order creation |
-| `/api/orders` | Customer order history |
+| `/api/storefront/checkout` | Checkout session flow |
+| `/api/storefront/currency` | Exchange rates & conversion |
 | `/api/payment/webhook` | Payment provider webhooks |
-| `/api/admin/*` | All admin-only endpoints (require staff JWT) |
-| `/api/health` | Health check |
+| `/api/admin/staff` | Staff management (owner/admin only) |
+| `/api/admin/customers` | Customer management |
+| `/api/admin/catalog` | Product & category management |
+| `/api/admin/orders` | Order management |
+| `/api/admin/inventory` | Stock management |
+| `/api/admin/marketing` | Coupons & banners |
+| `/api/admin/payments` | Payment gateway config |
+| `/api/admin/shipping` | Shipping zones & rates |
+| `/api/admin/tax` | Tax rate management |
+| `/api/admin/currency` | Exchange rate management |
+| `/api/admin/analytics` | Revenue & traffic reports |
+| `/api/admin/organization` | Store config & theme |
+| `/api/admin/media` | File upload & signed URLs |
+| `/api/health` | Health check (DB, Redis, storage) |
+
+---
+
+## Running Tests
+
+```bash
+cd backend
+
+# Unit tests (40 tests, 7 suites)
+npm run test
+
+# Coverage report
+npm run test:cov
+
+# E2E tests (requires Docker)
+docker compose -f docker-compose.test.yml up -d
+npm run test:e2e
+docker compose -f docker-compose.test.yml down -v
+```
+
+---
+
+<div align="center">
+
+Built with care by Ram Phoogat
+
+</div>
